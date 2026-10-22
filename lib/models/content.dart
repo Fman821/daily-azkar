@@ -1,0 +1,150 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart' show rootBundle;
+
+/// One dhikr or dua: Arabic text, Amharic meaning, how many times to say it.
+class Dhikr {
+  const Dhikr({
+    required this.id,
+    required this.category,
+    required this.title,
+    required this.arabic,
+    required this.amharic,
+    required this.repeat,
+    required this.source,
+  });
+
+  final String id;
+  final String category;
+  final String title;
+  final String arabic;
+  final String amharic;
+  final int repeat;
+  final String source;
+
+  /// Unique across the app, used for favourites and counters.
+  String get key => '$category:$id';
+
+  factory Dhikr.fromJson(Map<String, dynamic> json, {required String category}) {
+    return Dhikr(
+      id: json['id'] as String,
+      category: category,
+      title: json['title'] as String? ?? '',
+      arabic: json['ar'] as String,
+      amharic: json['am'] as String,
+      repeat: json['repeat'] as int? ?? 1,
+      source: json['source'] as String? ?? '',
+    );
+  }
+}
+
+class AzkarCategory {
+  const AzkarCategory({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.image,
+    required this.items,
+  });
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final String icon;
+  final String image;
+  final List<Dhikr> items;
+}
+
+/// One of the 99 names of Allah.
+class DivineName {
+  const DivineName({
+    required this.number,
+    required this.arabic,
+    required this.transliteration,
+    required this.meaning,
+  });
+
+  final int number;
+  final String arabic;
+  final String transliteration;
+  final String meaning;
+
+  factory DivineName.fromJson(Map<String, dynamic> json) {
+    return DivineName(
+      number: json['n'] as int,
+      arabic: json['ar'] as String,
+      transliteration: json['tr'] as String,
+      meaning: json['am'] as String,
+    );
+  }
+}
+
+class Content {
+  const Content({
+    required this.categories,
+    required this.names,
+    required this.duas,
+  });
+
+  final List<AzkarCategory> categories;
+  final List<DivineName> names;
+  final List<Dhikr> duas;
+
+  Iterable<Dhikr> get allAzkar => categories.expand((c) => c.items);
+
+  AzkarCategory? categoryById(String id) {
+    for (final c in categories) {
+      if (c.id == id) return c;
+    }
+    return null;
+  }
+}
+
+class ContentRepository {
+  ContentRepository._();
+
+  /// Loads the bundled JSON files from assets/data.
+  static Future<Content> load() async {
+    final azkar = await rootBundle.loadString('assets/data/azkar.json');
+    final names = await rootBundle.loadString('assets/data/names.json');
+    final duas = await rootBundle.loadString('assets/data/duas.json');
+    return parse(azkarJson: azkar, namesJson: names, duasJson: duas);
+  }
+
+  /// Parses the JSON text. Kept separate from [load] so it can be tested.
+  static Content parse({
+    required String azkarJson,
+    required String namesJson,
+    required String duasJson,
+  }) {
+    final azkar = jsonDecode(azkarJson) as Map<String, dynamic>;
+    final rawCategories = azkar['categories'] as List<dynamic>;
+
+    final categories = rawCategories.map((raw) {
+      final m = raw as Map<String, dynamic>;
+      final id = m['id'] as String;
+      final items = (m['items'] as List<dynamic>)
+          .map((e) => Dhikr.fromJson(e as Map<String, dynamic>, category: id))
+          .toList();
+      return AzkarCategory(
+        id: id,
+        title: m['title'] as String,
+        subtitle: m['subtitle'] as String,
+        icon: m['icon'] as String,
+        image: m['image'] as String,
+        items: items,
+      );
+    }).toList();
+
+    final names = (jsonDecode(namesJson) as List<dynamic>)
+        .map((e) => DivineName.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    final duas = (jsonDecode(duasJson) as List<dynamic>)
+        .map((e) => Dhikr.fromJson(e as Map<String, dynamic>, category: 'duas'))
+        .toList();
+
+    return Content(categories: categories, names: names, duas: duas);
+  }
+}

@@ -1,0 +1,28 @@
+name: daily_azkar
+description: Daily Azkar — morning, evening and daily adhkar, the 99 names of Allah and duas, with Arabic text and Amharic meanings.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/
+    - assets/images/
+  fonts:
+    - family: Quran
+      fonts:
+        - asset: assets/fonts/Quran.ttf

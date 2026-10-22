@@ -1,0 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'models/content.dart';
+import 'screens/azkar_tab.dart';
+import 'screens/duas_tab.dart';
+import 'screens/favorites_tab.dart';
+import 'screens/home_tab.dart';
+import 'screens/settings_tab.dart';
+import 'state/app_state.dart';
+import 'theme.dart';
+
+class AzkarApp extends StatelessWidget {
+  const AzkarApp({super.key, required this.state, required this.content});
+
+  final AppState state;
+  final Content content;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AppState>.value(value: state),
+        Provider<Content>.value(value: content),
+      ],
+      child: MaterialApp(
+        title: 'እስላማዊ አዝካር',
+        debugShowCheckedModeBanner: false,
+        theme: buildTheme(),
+        home: const RootShell(),
+      ),
+    );
+  }
+}
+
+/// Bottom navigation with five tabs. Tabs are kept alive with IndexedStack.
+class RootShell extends StatefulWidget {
+  const RootShell({super.key});
+
+  @override
+  State<RootShell> createState() => _RootShellState();
+}
+
+class _RootShellState extends State<RootShell> {
+  int _index = 0;
+
+  void _selectTab(int index) => setState(() => _index = index);
+
+  @override
+  Widget build(BuildContext context) {
+    final favCount = context.watch<AppState>().favorites.length;
+
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
+        children: [
+          HomeTab(onOpenTab: _selectTab),
+          const AzkarTab(),
+          const DuasTab(),
+          const FavoritesTab(),
+          const SettingsTab(),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: _selectTab,
+        destinations: [
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'መነሻ',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.wb_sunny_outlined),
+            selectedIcon: Icon(Icons.wb_sunny),
+            label: 'አዝካር',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.front_hand_outlined),
+            selectedIcon: Icon(Icons.front_hand),
+            label: 'ጸሎት',
+          ),
+          NavigationDestination(
+            icon: Badge(
+              isLabelVisible: favCount > 0,
+              label: Text('$favCount'),
+              child: const Icon(Icons.favorite_border),
+            ),
+            selectedIcon: Badge(
+              isLabelVisible: favCount > 0,
+              label: Text('$favCount'),
+              child: const Icon(Icons.favorite),
+            ),
+            label: 'ተወዳጅ',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'ቅንብር',
+          ),
+        ],
+      ),
+    );
+  }
+}
