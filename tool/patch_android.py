@@ -129,6 +129,37 @@ def patch_gradle(app_dir: pathlib.Path) -> None:
     print(f'patch_android: {path.name} ok')
 
 
+def patch_release_shrinking(app_dir: pathlib.Path) -> None:
+    """Turns off R8 for release builds.
+
+    R8 strips the generic type information that flutter_local_notifications
+    needs to read its saved reminders, which crashes with "Missing type
+    parameter" when reminders are changed in a release build.
+    """
+    kts = app_dir / 'build.gradle.kts'
+    groovy = app_dir / 'build.gradle'
+    path = kts if kts.exists() else groovy
+    is_kts = path == kts
+    text = path.read_text(encoding='utf-8')
+
+    off = 'isMinifyEnabled = false' if is_kts else 'minifyEnabled false'
+    on_pattern = r'isMinifyEnabled\s*=\s*true' if is_kts else r'minifyEnabled\s+true'
+    if off in text and not re.search(on_pattern, text):
+        print(f'patch_android: release shrinking already off in {path.name}')
+        return
+    if re.search(on_pattern, text):
+        text = re.sub(on_pattern, off, text)
+    else:
+        release = re.search(r'^[ \t]*release\s*\{[ \t]*\n', text, re.M)
+        if not release:
+            fail(f'no release {{ block in {path.name}')
+        text = text[: release.end()] + f'            {off}\n' + text[release.end():]
+    if off not in text:
+        fail(f'could not disable release shrinking in {path.name}')
+    path.write_text(text, encoding='utf-8')
+    print(f'patch_android: {path.name} release shrinking off')
+
+
 def main() -> None:
     root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '.')
     app_dir = root / 'android' / 'app'
@@ -136,6 +167,7 @@ def main() -> None:
         fail(f'{app_dir} not found. Run `flutter create --platforms=android .` first.')
     patch_manifest(app_dir)
     patch_gradle(app_dir)
+    patch_release_shrinking(app_dir)
     print('patch_android: done')
 
 
