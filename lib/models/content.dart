@@ -12,6 +12,7 @@ class Dhikr {
     required this.amharic,
     required this.repeat,
     required this.source,
+    this.audio = '',
   });
 
   final String id;
@@ -21,6 +22,9 @@ class Dhikr {
   final String amharic;
   final int repeat;
   final String source;
+
+  /// Recitation: an https link, an asset path (assets/audio/...), or empty for none.
+  final String audio;
 
   /// Unique across the app, used for favourites and counters.
   String get key => '$category:$id';
@@ -34,6 +38,7 @@ class Dhikr {
       amharic: json['am'] as String,
       repeat: json['repeat'] as int? ?? 1,
       source: json['source'] as String? ?? '',
+      audio: json['audio'] as String? ?? '',
     );
   }
 }

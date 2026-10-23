@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'audio/azkar_player.dart';
 import 'models/content.dart';
 import 'screens/azkar_tab.dart';
 import 'screens/duas_tab.dart';
@@ -21,6 +22,7 @@ class AzkarApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: state),
+        ChangeNotifierProvider<AzkarPlayer>(create: (_) => AzkarPlayer()),
         Provider<Content>.value(value: content),
       ],
       child: MaterialApp(

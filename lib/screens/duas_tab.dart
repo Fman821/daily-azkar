@@ -25,12 +25,12 @@ class DuasTab extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 14),
               child: ImageTile(
                 image: 'bg_names.jpg',
-                height: 120,
+                height: 130,
+                icon: Icons.auto_awesome_outlined,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const NamesScreen()),
                 ),
-                child: const TileText(
-                  icon: Icons.auto_awesome_outlined,
+                child: const TileBody(
                   title: '99 የአላህ ስሞች',
                   subtitle: 'ስሞችን ለማንበብና ትርጉማቸውን ለማወቅ',
                 ),

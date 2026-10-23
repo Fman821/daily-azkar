@@ -28,8 +28,20 @@ jobs:
           flutter create --project-name daily_azkar --platforms=android --org com.example .
           rm -f test/widget_test.dart
 
+      - name: Add internet permission and app name
+        run: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          # Release builds need INTERNET to stream recitations.
+          sed -i 's|<manifest xmlns:android="http://schemas.android.com/apk/res/android">|&\n    <uses-permission android:name="android.permission.INTERNET"/>|' "$MANIFEST"
+          sed -i 's|android:label="[^"]*"|android:label="እስላማዊ አዝካር"|' "$MANIFEST"
+          grep -q 'android.permission.INTERNET' "$MANIFEST"
+
       - name: Install packages
         run: flutter pub get
+
+      - name: Check code (report only)
+        continue-on-error: true
+        run: flutter analyze
 
       - name: Run tests
         run: flutter test

@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../audio/azkar_player.dart';
 import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import 'common.dart';
 
-/// One dhikr: number, Arabic text, Amharic meaning, source, favourite button
-/// and a counter that counts up to the required repeat.
+/// One dhikr: number, Arabic text, Amharic meaning, source, play button (when
+/// there is a recording), favourite button and a counter that counts up to
+/// the required repeat.
 class DhikrCard extends StatelessWidget {
   const DhikrCard({super.key, required this.dhikr, this.index});
 
   final Dhikr dhikr;
   final int? index;
 
+  Future<void> _togglePlay(BuildContext context) async {
+    final player = context.read<AzkarPlayer>();
+    final error = await player.toggle(dhikr.key, dhikr.audio);
+    if (error != null && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final player = context.watch<AzkarPlayer>();
     final scale = state.fontScale;
     final isFavorite = state.isFavorite(dhikr.key);
     final count = state.progressOf(dhikr.key);
     final done = count >= dhikr.repeat;
     final double progress = done ? 1.0 : count / dhikr.repeat;
+    final isPlaying = player.isPlaying(dhikr.key);
 
     return GoldCard(
       child: Column(
@@ -50,6 +64,17 @@ class DhikrCard extends StatelessWidget {
                   ),
                 ),
               ),
+              if (dhikr.audio.isNotEmpty)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  tooltip: isPlaying ? 'አቁም' : 'አዳምጥ',
+                  onPressed: () => _togglePlay(context),
+                  icon: Icon(
+                    isPlaying ? Icons.pause_circle : Icons.play_circle,
+                    color: AppColors.gold,
+                    size: 28,
+                  ),
+                ),
               IconButton(
                 visualDensity: VisualDensity.compact,
                 tooltip: isFavorite ? 'ከተወዳጆች አውጣ' : 'ወደ ተወዳጆች ጨምር',

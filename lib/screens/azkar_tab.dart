@@ -35,12 +35,12 @@ class AzkarTab extends StatelessWidget {
           return ImageTile(
             image: category.image,
             height: 150,
+            icon: iconFor(category.icon),
             onTap: () => openCategory(context, category),
-            child: TileText(
-              icon: iconFor(category.icon),
+            child: TileBody(
               title: category.title,
               subtitle: category.subtitle,
-              trailing: '${category.items.length}',
+              count: category.items.length,
             ),
           );
         },

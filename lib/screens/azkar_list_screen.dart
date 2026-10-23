@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../audio/azkar_player.dart';
 import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -32,10 +33,26 @@ class AzkarListScreen extends StatelessWidget {
           if (i == 0) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 14),
-              child: Text(
-                category.subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.muted),
+              child: Column(
+                children: [
+                  Text(
+                    category.subtitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.muted),
+                  ),
+                  if (category.id == 'morning' || category.id == 'evening') ...[
+                    const SizedBox(height: 12),
+                    _FullRecitationCard(
+                      categoryId: category.id,
+                      title: category.id == 'morning'
+                          ? 'ሙሉ የጠዋት አዝካር ድምፅ'
+                          : 'ሙሉ የምሽት አዝካር ድምፅ',
+                      asset: category.id == 'morning'
+                          ? 'assets/audio/morning_adhkar.mp3'
+                          : 'assets/audio/evening_adhkar.mp3',
+                    ),
+                  ],
+                ],
               ),
             );
           }
@@ -44,6 +61,48 @@ class AzkarListScreen extends StatelessWidget {
             child: DhikrCard(dhikr: category.items[i - 1], index: i),
           );
         },
+      ),
+    );
+  }
+}
+
+
+class _FullRecitationCard extends StatelessWidget {
+  const _FullRecitationCard({
+    required this.categoryId,
+    required this.title,
+    required this.asset,
+  });
+
+  final String categoryId;
+  final String title;
+  final String asset;
+
+  @override
+  Widget build(BuildContext context) {
+    final player = context.watch<AzkarPlayer>();
+    final key = 'full-recitation:$categoryId';
+    final playing = player.isPlaying(key);
+    return Card(
+      color: AppColors.card,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: AppColors.gold),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.headphones, color: AppColors.gold, size: 30),
+        title: Text(title, style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
+        subtitle: const Text('ከኢንተርኔት ውጭም ማዳመጥ ይቻላል', style: TextStyle(color: AppColors.textSoft)),
+        trailing: IconButton(
+          tooltip: playing ? 'አቁም' : 'አዳምጥ',
+          icon: Icon(playing ? Icons.pause_circle_filled : Icons.play_circle_fill, color: AppColors.gold, size: 36),
+          onPressed: () async {
+            final error = await context.read<AzkarPlayer>().toggle(key, asset);
+            if (error != null && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+            }
+          },
+        ),
       ),
     );
   }

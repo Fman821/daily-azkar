@@ -66,7 +66,7 @@ class HomeTab extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           _Header(name: state.name),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           GoldCard(
             child: Column(
               children: [
@@ -124,11 +124,11 @@ class HomeTab extends StatelessWidget {
                 child: ImageTile(
                   image: 'bg_names.jpg',
                   height: 170,
+                  icon: Icons.auto_awesome_outlined,
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => const NamesScreen()),
                   ),
-                  child: const TileText(
-                    icon: Icons.auto_awesome_outlined,
+                  child: const TileBody(
                     title: '99 የአላህ ስሞች',
                     subtitle: 'አስማኡል ሁስና',
                   ),
@@ -139,9 +139,9 @@ class HomeTab extends StatelessWidget {
                 child: ImageTile(
                   image: 'bg_duas.jpg',
                   height: 170,
+                  icon: Icons.front_hand_outlined,
                   onTap: () => onOpenTab(2),
-                  child: const TileText(
-                    icon: Icons.front_hand_outlined,
+                  child: const TileBody(
                     title: 'ጸሎቶች',
                     subtitle: 'ዱዓዎችና ምክሮች',
                   ),
@@ -181,24 +181,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 84,
-          height: 84,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFFF3CF5A), Color(0xFFA8801F)],
-            ),
-            boxShadow: [
-              BoxShadow(color: AppColors.gold.withAlpha(90), blurRadius: 18),
-            ],
-          ),
-          child: const Icon(
-            Icons.brightness_high,
-            size: 44,
-            color: Color(0xFF2A1D00),
-          ),
-        ),
+        const GoldBadge(icon: Icons.brightness_high, size: 96),
         const SizedBox(height: 12),
         ShaderMask(
           shaderCallback: (rect) => const LinearGradient(
@@ -235,12 +218,12 @@ class _CategoryTile extends StatelessWidget {
     return ImageTile(
       image: category.image,
       height: 190,
+      icon: iconFor(category.icon),
       onTap: onTap,
-      child: TileText(
-        icon: iconFor(category.icon),
+      child: TileBody(
         title: category.title,
         subtitle: category.subtitle,
-        trailing: '${category.items.length}',
+        count: category.items.length,
       ),
     );
   }
@@ -255,30 +238,42 @@ class _TasbihCard extends StatelessWidget {
     return GoldCard(
       child: Row(
         children: [
+          // Gold ring around the counter.
           Container(
             width: 74,
             height: 74,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(3),
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.orange, width: 3),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFF3CF5A), AppColors.orange, Color(0xFFF3CF5A)],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'ተስቢሕ',
-                  style: TextStyle(fontSize: 12, color: AppColors.muted),
-                ),
-                Text(
-                  '${state.tasbih}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.cardDeep,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'ተስቢሕ',
+                    style: TextStyle(fontSize: 12, color: AppColors.muted),
                   ),
-                ),
-              ],
+                  Text(
+                    '${state.tasbih}',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.gold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 14),

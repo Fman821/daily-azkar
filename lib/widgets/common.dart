@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
@@ -62,7 +64,75 @@ class GoldCard extends StatelessWidget {
   }
 }
 
-/// A tile with a background photo, a dark gradient on top and content at the bottom.
+/// Gold diamond with an icon in it, like the badges on the mockup tiles.
+class GoldBadge extends StatelessWidget {
+  const GoldBadge({super.key, required this.icon, this.size = 46});
+
+  final IconData icon;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final diamond = size * 0.72;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Transform.rotate(
+            angle: math.pi / 4,
+            child: Container(
+              width: diamond,
+              height: diamond,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF0F3B29), AppColors.cardDeep],
+                ),
+                borderRadius: BorderRadius.circular(size * 0.1),
+                border: Border.all(color: AppColors.gold, width: 1.5),
+                boxShadow: [
+                  BoxShadow(color: AppColors.gold.withAlpha(70), blurRadius: 10),
+                ],
+              ),
+            ),
+          ),
+          Icon(icon, color: AppColors.gold, size: size * 0.42),
+        ],
+      ),
+    );
+  }
+}
+
+/// Round gold button with an arrow, shown at the bottom right of a tile.
+class GoldRoundButton extends StatelessWidget {
+  const GoldRoundButton({super.key, required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 38,
+      height: 38,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFF3CF5A), Color(0xFFB98A14)],
+        ),
+      ),
+      child: Icon(icon, size: 20, color: const Color(0xFF2A1D00)),
+    );
+  }
+}
+
+/// A tile with a background photo, a dark gradient on top, a gold badge at
+/// the top-left and [child] at the bottom.
 class ImageTile extends StatelessWidget {
   const ImageTile({
     super.key,
@@ -70,12 +140,14 @@ class ImageTile extends StatelessWidget {
     required this.height,
     required this.child,
     this.onTap,
+    this.icon,
   });
 
   final String image;
   final double height;
   final Widget child;
   final VoidCallback? onTap;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +191,13 @@ class ImageTile extends StatelessWidget {
                   ),
                 ),
               ),
+              if (icon != null)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  // Let taps pass through the badge to the tile below it.
+                  child: IgnorePointer(child: GoldBadge(icon: icon!)),
+                ),
             ],
           ),
         ),
@@ -127,20 +206,18 @@ class ImageTile extends StatelessWidget {
   }
 }
 
-/// Icon, optional badge, title and subtitle, used on top of an [ImageTile].
-class TileText extends StatelessWidget {
-  const TileText({
+/// Title, subtitle, optional item count pill, and the gold arrow button.
+class TileBody extends StatelessWidget {
+  const TileBody({
     super.key,
-    required this.icon,
     required this.title,
     required this.subtitle,
-    this.trailing,
+    this.count,
   });
 
-  final IconData icon;
   final String title;
   final String subtitle;
-  final String? trailing;
+  final int? count;
 
   @override
   Widget build(BuildContext context) {
@@ -148,26 +225,6 @@ class TileText extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, color: AppColors.gold, size: 26),
-            const Spacer(),
-            if (trailing != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.goldSoft),
-                  color: AppColors.gold.withAlpha(30),
-                ),
-                child: Text(
-                  trailing!,
-                  style: const TextStyle(color: AppColors.gold, fontSize: 13),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 10),
         Text(
           title,
           style: const TextStyle(
@@ -180,6 +237,26 @@ class TileText extends StatelessWidget {
         Text(
           subtitle,
           style: const TextStyle(fontSize: 12, color: AppColors.textSoft),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            if (count != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.goldSoft),
+                  color: AppColors.gold.withAlpha(25),
+                ),
+                child: Text(
+                  '$count አዝካሮች',
+                  style: const TextStyle(color: AppColors.gold, fontSize: 12),
+                ),
+              ),
+            const Spacer(),
+            const GoldRoundButton(icon: Icons.arrow_forward),
+          ],
         ),
       ],
     );
