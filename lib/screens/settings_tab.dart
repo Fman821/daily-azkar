@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../notifications/azkar_reminders.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -125,7 +126,7 @@ class SettingsTab extends StatelessWidget {
                 style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700),
               ),
               subtitle: Text(
-                'ቅጽ 1.0.0 (Version 1.0.0)',
+                'ቅጽ 1.2.1 (Version 1.2.1)',
                 style: TextStyle(color: AppColors.muted),
               ),
             ),
@@ -165,10 +166,81 @@ class _AzkarReminderCard extends StatefulWidget {
 }
 
 class _AzkarReminderCardState extends State<_AzkarReminderCard> {
+  static const _kOn = 'reminder_on';
+  static const _kMorning = 'reminder_morning';
+  static const _kEvening = 'reminder_evening';
+
   bool _enabled = false;
   TimeOfDay _morning = const TimeOfDay(hour: 6, minute: 0);
   TimeOfDay _evening = const TimeOfDay(hour: 18, minute: 0);
-  bool _saving = false;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  /// Reads the saved reminder settings so the card shows what is really set.
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _enabled = prefs.getBool(_kOn) ?? false;
+      _morning = _fromMinutes(prefs.getInt(_kMorning) ?? 6 * 60);
+      _evening = _fromMinutes(prefs.getInt(_kEvening) ?? 18 * 60);
+      _ready = true;
+    });
+  }
+
+  static TimeOfDay _fromMinutes(int m) => TimeOfDay(hour: m ~/ 60, minute: m % 60);
+  static int _toMinutes(TimeOfDay t) => t.hour * 60 + t.minute;
+
+  /// Saves the settings and rebuilds the reminders. Returns false if the
+  /// reminders could not be turned on (permission refused or an error).
+  Future<bool> _apply({
+    required bool enabled,
+    required TimeOfDay morning,
+    required TimeOfDay evening,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      if (enabled) {
+        final granted = await AzkarReminders.instance.requestPermission();
+        if (granted != true) {
+          messenger.showSnackBar(const SnackBar(
+            content: Text('ማሳወቂያ እንዲታይ ፍቃድ መስጠት አለብዎት።'),
+          ));
+          return false;
+        }
+      }
+      await AzkarReminders.instance.configure(
+        enabled: enabled,
+        morningHour: morning.hour, morningMinute: morning.minute,
+        eveningHour: evening.hour, eveningMinute: evening.minute,
+      );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kOn, enabled);
+      await prefs.setInt(_kMorning, _toMinutes(morning));
+      await prefs.setInt(_kEvening, _toMinutes(evening));
+      if (enabled) {
+        messenger.showSnackBar(const SnackBar(
+          content: Text('የጠዋትና የማታ ማስታወሻ ተቀናብሯል።'),
+        ));
+      }
+      return true;
+    } catch (_) {
+      messenger.showSnackBar(const SnackBar(
+        content: Text('ማስታወሻውን ማቀናበር አልተቻለም።'),
+      ));
+      return false;
+    }
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    final ok = await _apply(enabled: value, morning: _morning, evening: _evening);
+    if (ok && mounted) setState(() => _enabled = value);
+  }
 
   Future<void> _pick(bool morning) async {
     final picked = await showTimePicker(
@@ -176,28 +248,16 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       initialTime: morning ? _morning : _evening,
       helpText: morning ? 'የጠዋት አዝካር ሰዓት' : 'የማታ አዝካር ሰዓት',
     );
-    if (picked != null && mounted) {
-      setState(() { if (morning) { _morning = picked; } else { _evening = picked; } });
+    if (picked == null || !mounted) return;
+    final newMorning = morning ? picked : _morning;
+    final newEvening = morning ? _evening : picked;
+    final ok = await _apply(enabled: _enabled, morning: newMorning, evening: newEvening);
+    if (ok && mounted) {
+      setState(() {
+        _morning = newMorning;
+        _evening = newEvening;
+      });
     }
-  }
-
-  Future<void> _save() async {
-    setState(() => _saving = true);
-    try {
-      if (_enabled) await AzkarReminders.instance.requestPermission();
-      await AzkarReminders.instance.configure(
-        enabled: _enabled,
-        morningHour: _morning.hour, morningMinute: _morning.minute,
-        eveningHour: _evening.hour, eveningMinute: _evening.minute,
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(_enabled ? 'የጠዋትና የማታ ማስታወሻ ተቀናብሯል።' : 'የአዝካር ማስታወሻ ጠፍቷል።'),
-      ));
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('ማስታወሻውን ማቀናበር አልተቻለም። የnotification ፈቃድን ይመልከቱ።'),
-      ));
-    } finally { if (mounted) setState(() => _saving = false); }
   }
 
   String _format(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -211,10 +271,14 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       ]),
       const SizedBox(height: 8),
       const Text('“አዝካር ማለትዎን አይርሱ” የሚል ዕለታዊ ማሳሰቢያ።', style: TextStyle(color: AppColors.muted)),
-      SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('ማስታወሻዎችን አብራ'), value: _enabled, onChanged: (v) => setState(() => _enabled = v)),
+      SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: const Text('ማስታወሻዎችን አብራ'),
+        value: _enabled,
+        onChanged: _ready ? (v) => _setEnabled(v) : null,
+      ),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.wb_sunny_outlined, color: AppColors.gold), title: const Text('የጠዋት አዝካር'), trailing: Text(_format(_morning), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(true)),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.nightlight_outlined, color: AppColors.gold), title: const Text('የማታ አዝካር'), trailing: Text(_format(_evening), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(false)),
-      SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: _saving ? null : _save, icon: const Icon(Icons.save_outlined), label: Text(_saving ? 'በመቀመጥ ላይ…' : 'ማስታወሻውን አስቀምጥ'))),
       const SizedBox(height: 4),
       const Text('መደበኛ ሰዓት፦ ጠዋት 06:00፣ ማታ 18:00 (የኢትዮጵያ ሰዓት። ሊቀየር ይችላል።)', style: TextStyle(fontSize: 11, color: AppColors.muted)),
     ]),
