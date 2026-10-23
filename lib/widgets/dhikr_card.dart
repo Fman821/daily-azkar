@@ -102,6 +102,18 @@ class DhikrCard extends StatelessWidget {
             ),
           ),
           const Divider(color: AppColors.border, height: 24),
+          if (dhikr.translit.isNotEmpty) ...[
+            Text(
+              dhikr.translit,
+              style: TextStyle(
+                fontSize: 15 * scale,
+                height: 1.7,
+                color: AppColors.goldSoft,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           Text(
             dhikr.amharic,
             style: TextStyle(
