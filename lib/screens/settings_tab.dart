@@ -169,8 +169,10 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
   static const _kOn = 'reminder_on';
   static const _kMorning = 'reminder_morning';
   static const _kEvening = 'reminder_evening';
+  static const _kMode = 'reminder_mode';
 
   bool _enabled = false;
+  ReminderMode _mode = ReminderMode.alarm;
   TimeOfDay _morning = const TimeOfDay(hour: 6, minute: 0);
   TimeOfDay _evening = const TimeOfDay(hour: 18, minute: 0);
   bool _ready = false;
@@ -189,6 +191,7 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       _enabled = prefs.getBool(_kOn) ?? false;
       _morning = _fromMinutes(prefs.getInt(_kMorning) ?? 6 * 60);
       _evening = _fromMinutes(prefs.getInt(_kEvening) ?? 18 * 60);
+      _mode = ReminderMode.fromStorage(prefs.getString(_kMode));
       _ready = true;
     });
   }
@@ -200,6 +203,7 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
   /// reminders could not be turned on (permission refused or an error).
   Future<bool> _apply({
     required bool enabled,
+    required ReminderMode mode,
     required TimeOfDay morning,
     required TimeOfDay evening,
   }) async {
@@ -216,6 +220,7 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       }
       await AzkarReminders.instance.configure(
         enabled: enabled,
+        mode: mode,
         morningHour: morning.hour, morningMinute: morning.minute,
         eveningHour: evening.hour, eveningMinute: evening.minute,
       );
@@ -223,6 +228,7 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       await prefs.setBool(_kOn, enabled);
       await prefs.setInt(_kMorning, _toMinutes(morning));
       await prefs.setInt(_kEvening, _toMinutes(evening));
+      await prefs.setString(_kMode, mode.storageValue);
       if (enabled) {
         messenger.showSnackBar(const SnackBar(
           content: Text('የጠዋትና የማታ ማስታወሻ ተቀናብሯል።'),
@@ -240,8 +246,13 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
   }
 
   Future<void> _setEnabled(bool value) async {
-    final ok = await _apply(enabled: value, morning: _morning, evening: _evening);
+    final ok = await _apply(enabled: value, mode: _mode, morning: _morning, evening: _evening);
     if (ok && mounted) setState(() => _enabled = value);
+  }
+
+  Future<void> _setMode(ReminderMode mode) async {
+    final ok = await _apply(enabled: _enabled, mode: mode, morning: _morning, evening: _evening);
+    if (ok && mounted) setState(() => _mode = mode);
   }
 
   Future<void> _pick(bool morning) async {
@@ -253,7 +264,7 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
     if (picked == null || !mounted) return;
     final newMorning = morning ? picked : _morning;
     final newEvening = morning ? _evening : picked;
-    final ok = await _apply(enabled: _enabled, morning: newMorning, evening: newEvening);
+    final ok = await _apply(enabled: _enabled, mode: _mode, morning: newMorning, evening: newEvening);
     if (ok && mounted) {
       setState(() {
         _morning = newMorning;
@@ -278,6 +289,20 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
         title: const Text('ማስታወሻዎችን አብራ'),
         value: _enabled,
         onChanged: _ready ? (v) => _setEnabled(v) : null,
+      ),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<ReminderMode>(
+            segments: const [
+              ButtonSegment(value: ReminderMode.alarm, icon: Icon(Icons.alarm), label: Text('አላርም')),
+              ButtonSegment(value: ReminderMode.notification, icon: Icon(Icons.notifications_none), label: Text('ማሳወቂያ')),
+            ],
+            selected: {_mode},
+            onSelectionChanged: _ready && _enabled ? (s) => _setMode(s.first) : null,
+          ),
+        ),
       ),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.wb_sunny_outlined, color: AppColors.gold), title: const Text('የጠዋት አዝካር'), trailing: Text(_format(_morning), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(true)),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.nightlight_outlined, color: AppColors.gold), title: const Text('የማታ አዝካር'), trailing: Text(_format(_evening), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(false)),
