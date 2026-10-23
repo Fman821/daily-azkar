@@ -229,9 +229,11 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
         ));
       }
       return true;
-    } catch (_) {
-      messenger.showSnackBar(const SnackBar(
-        content: Text('ማስታወሻውን ማቀናበር አልተቻለም።'),
+    } catch (e) {
+      // Shows the real error so it can be reported and fixed.
+      messenger.showSnackBar(SnackBar(
+        duration: const Duration(seconds: 10),
+        content: Text('ማስታወሻውን ማቀናበር አልተቻለም። ($e)'),
       ));
       return false;
     }
