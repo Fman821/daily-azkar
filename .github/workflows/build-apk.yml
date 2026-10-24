@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Get the code
         uses: actions/checkout@v4
@@ -28,41 +29,95 @@ jobs:
           flutter create --project-name daily_azkar --platforms=android --org com.example .
           rm -f test/widget_test.dart
 
-      - name: Add internet permission and app name
+      - name: Configure Android manifest
         run: |
-          MANIFEST=android/app/src/main/AndroidManifest.xml
-          # Release builds need INTERNET to stream recitations.
-          sed -i 's|<manifest xmlns:android="http://schemas.android.com/apk/res/android">|&\n    <uses-permission android:name="android.permission.INTERNET"/>|' "$MANIFEST"
-          sed -i 's|android:label="[^"]*"|android:label="እስላማዊ አዝካር"|' "$MANIFEST"
-          grep -q 'android.permission.INTERNET' "$MANIFEST"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
 
-            - name: Enable Android core library desugaring
+          path = Path("android/app/src/main/AndroidManifest.xml")
+          text = path.read_text()
+
+          if "android.permission.INTERNET" not in text:
+              text = re.sub(
+                  r'(<manifest\b[^>]*>)',
+                  r'\1\n    <uses-permission android:name="android.permission.INTERNET"/>',
+                  text,
+                  count=1
+              )
+
+          text = re.sub(
+              r'android:label="[^"]*"',
+              'android:label="እስላማዊ አዝካር"',
+              text,
+              count=1
+          )
+
+          path.write_text(text)
+          PY
+
+      - name: Enable Android core library desugaring
         run: |
-          GRADLE_FILE="android/app/build.gradle"
-          if [ ! -f "$GRADLE_FILE" ]; then
-            GRADLE_FILE="android/app/build.gradle.kts"
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
 
-          if [ -f "$GRADLE_FILE" ]; then
-            echo "Found $GRADLE_FILE"
-            if [[ "$GRADLE_FILE" == *.kts ]]; then
-              sed -i '/compileOptions {/a\        isCoreLibraryDesugaringEnabled = true' "$GRADLE_FILE"
-              sed -i '/dependencies {/a\    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' "$GRADLE_FILE"
-            else
-              sed -i '/compileOptions {/a\        coreLibraryDesugaringEnabled true' "$GRADLE_FILE"
-              sed -i '/dependencies {/a\    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"' "$GRADLE_FILE"
-            fi
-          else
-            echo "ERROR: Android Gradle file not found"
-            exit 1
-          fi
+          candidates = [
+              Path("android/app/build.gradle"),
+              Path("android/app/build.gradle.kts"),
+          ]
+
+          gradle = next((p for p in candidates if p.exists()), None)
+
+          if gradle is None:
+              raise SystemExit("ERROR: Android Gradle file not found")
+
+          text = gradle.read_text()
+          kotlin_dsl = gradle.name.endswith(".kts")
+
+          if "compileOptions {" not in text:
+              raise SystemExit("ERROR: compileOptions block not found")
+
+          if "isCoreLibraryDesugaringEnabled" not in text and "coreLibraryDesugaringEnabled" not in text:
+              setting = (
+                  "        isCoreLibraryDesugaringEnabled = true"
+                  if kotlin_dsl
+                  else "        coreLibraryDesugaringEnabled true"
+              )
+              text = re.sub(
+                  r'compileOptions\s*\{',
+                  lambda m: m.group(0) + "\n" + setting,
+                  text,
+                  count=1
+              )
+
+          if "desugar_jdk_libs" not in text:
+              dependency = (
+                  '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")'
+                  if kotlin_dsl
+                  else '    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"'
+              )
+
+              if not re.search(r'\bdependencies\s*\{', text):
+                  raise SystemExit("ERROR: dependencies block not found")
+
+              text = re.sub(
+                  r'dependencies\s*\{',
+                  lambda m: m.group(0) + "\n" + dependency,
+                  text,
+                  count=1
+              )
+
+          gradle.write_text(text)
+          print(f"Configured {gradle}")
+          PY
 
       - name: Install packages
         run: flutter pub get
 
-      - name: Check code (report only)
-        continue-on-error: true
+      - name: Check code
         run: flutter analyze
+        continue-on-error: true
 
       - name: Run tests
         run: flutter test
