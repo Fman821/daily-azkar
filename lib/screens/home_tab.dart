@@ -7,7 +7,6 @@ import '../theme.dart';
 import '../widgets/common.dart';
 import 'azkar_list_screen.dart';
 import 'names_screen.dart';
-import 'tasbih_screen.dart';
 
 class _Ayah {
   const _Ayah(this.arabic, this.amharic, this.reference);
@@ -100,39 +99,17 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 24),
           const _SectionTitle('በቅርብ'),
           const SizedBox(height: 10),
-          const Row(
-            children: [
-              Expanded(child: _SoonCard()),
-              SizedBox(width: 12),
-              Expanded(child: _SoonCard()),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const _SectionTitle('ሌሎች'),
-          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
-                child: _QuickTile(
-                  icon: Icons.auto_awesome_outlined,
-                  title: '99 ስሞች',
-                  subtitle: 'አስማኡል ሁስና',
+                child: _NamesCard(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => const NamesScreen()),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _QuickTile(
-                  icon: Icons.adjust,
-                  title: 'ተስቢህ',
-                  subtitle: '${state.tasbih} ቆጠራ',
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const TasbihScreen()),
-                  ),
-                ),
-              ),
+              const Expanded(child: _SoonCard()),
             ],
           ),
         ],
@@ -380,58 +357,59 @@ class _SoonCard extends StatelessWidget {
   }
 }
 
-class _QuickTile extends StatelessWidget {
-  const _QuickTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
+/// The 99 names of Allah, shown in the first slot of the "በቅርብ" row.
+class _NamesCard extends StatelessWidget {
+  const _NamesCard({required this.onTap});
 
-  final IconData icon;
-  final String title;
-  final String subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.card,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.goldSoft.withAlpha(120)),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        height: 190,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF137A63), Color(0xFF052A22)],
           ),
-          child: Row(
-            children: [
-              GoldBadge(icon: icon, size: 42),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: AppColors.gold,
-                        fontWeight: FontWeight.w700,
-                      ),
+          border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
+                  Spacer(),
+                  Text(
+                    '99 የአላህ ስሞች',
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.muted, fontSize: 12),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'አስማኡል ሁስና',
+                    style: TextStyle(color: AppColors.textSoft, fontSize: 12),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'ይክፈቱ ›',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 
-/// Tasbih counter on its own page: a big tap target with a ring that fills
-/// up to the chosen goal, and a light vibration on every count.
+/// Tasbih counter on its own page: a glowing ring fills up to the chosen goal,
+/// with a light vibration on every count.
 class TasbihScreen extends StatelessWidget {
   const TasbihScreen({super.key});
 
@@ -72,15 +72,25 @@ class TasbihScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 10,
               children: [
                 for (final t in _targets)
                   ChoiceChip(
-                    label: Text(t == 0 ? 'ያለ ገደብ' : '$t'),
+                    label: Text(
+                      t == 0 ? 'ያለ ገደብ' : '$t',
+                      style: TextStyle(
+                        color: target == t ? AppColors.bg : AppColors.textSoft,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     selected: target == t,
+                    selectedColor: AppColors.gold,
+                    backgroundColor: AppColors.card,
+                    side: BorderSide(color: AppColors.goldSoft.withAlpha(90)),
+                    showCheckmark: false,
                     onSelected: (_) => state.setTasbihTarget(t),
                   ),
               ],
@@ -89,58 +99,65 @@ class TasbihScreen extends StatelessWidget {
               child: Center(
                 child: GestureDetector(
                   onTap: () => _tap(context),
-                  child: SizedBox(
-                    width: 280,
-                    height: 280,
+                  child: Container(
+                    width: 310,
+                    height: 310,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [AppColors.gold.withAlpha(55), Colors.transparent],
+                      ),
+                    ),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          width: 280,
-                          height: 280,
+                          width: 286,
+                          height: 286,
                           child: CircularProgressIndicator(
                             value: progress,
-                            strokeWidth: 12,
+                            strokeWidth: 14,
+                            strokeCap: StrokeCap.round,
                             backgroundColor: AppColors.border,
                             color: AppColors.gold,
                           ),
                         ),
                         Container(
-                          width: 230,
-                          height: 230,
+                          width: 226,
+                          height: 226,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [Color(0xFF0E6B57), AppColors.cardDeep],
+                              colors: [Color(0xFF137A63), AppColors.cardDeep],
                             ),
-                            border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
+                            border: Border.all(color: AppColors.goldSoft.withAlpha(160), width: 1.5),
                             boxShadow: [
-                              BoxShadow(color: AppColors.gold.withAlpha(40), blurRadius: 24),
+                              BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 20, offset: const Offset(0, 8)),
                             ],
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              const Text(
+                                'ተስቢሕ',
+                                style: TextStyle(color: AppColors.muted, fontSize: 13, letterSpacing: 1),
+                              ),
                               Text(
                                 '$inRound',
                                 style: const TextStyle(
-                                  fontSize: 68,
+                                  fontSize: 76,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.gold,
-                                  height: 1.1,
+                                  height: 1.05,
                                 ),
                               ),
                               Text(
                                 target > 0 ? 'ከ $target' : 'ጠቅላላ $count',
                                 style: const TextStyle(color: AppColors.textSoft, fontSize: 15),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'ዙር $rounds',
-                                style: const TextStyle(color: AppColors.muted, fontSize: 13),
                               ),
                             ],
                           ),
@@ -151,15 +168,47 @@ class TasbihScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 18),
-              child: Text(
-                'ክብሩን ነክተው ይቁጠሩ',
-                style: TextStyle(color: AppColors.muted),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 0, 18, 22),
+              child: Row(
+                children: [
+                  Expanded(child: _Stat(label: 'ጠቅላላ', value: '$count')),
+                  const SizedBox(width: 12),
+                  Expanded(child: _Stat(label: 'ዙሮች', value: '$rounds')),
+                ],
               ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: Text('ክብሩን ነክተው ይቁጠሩ', style: TextStyle(color: AppColors.muted)),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.goldSoft.withAlpha(110)),
+      ),
+      child: Column(
+        children: [
+          Text(value, style: const TextStyle(color: AppColors.gold, fontSize: 22, fontWeight: FontWeight.w800)),
+          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 12)),
+        ],
       ),
     );
   }
