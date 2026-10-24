@@ -90,7 +90,7 @@ class _NamesHero extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           '99 የአላህ ስሞች',
                           style: TextStyle(
@@ -99,12 +99,12 @@ class _NamesHero extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
                           'አስማኡል ሁስና: ስሞችን ለማንበብና ትርጉማቸውን ለማወቅ',
                           style: TextStyle(color: AppColors.textSoft, fontSize: 13),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Text(
                           'ይክፈቱ ›',
                           style: TextStyle(color: AppColors.gold, fontSize: 13),

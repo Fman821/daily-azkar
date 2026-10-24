@@ -337,7 +337,7 @@ class _SoonCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.lock_clock_outlined, color: AppColors.muted, size: 34),
-          Spacer(),
+          const Spacer(),
           Text(
             'ቦታ ተይዟል',
             style: TextStyle(
@@ -386,9 +386,9 @@ class _NamesCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
-                  Spacer(),
+                children: [
+                  const GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
+                  const Spacer(),
                   Text(
                     '99 የአላህ ስሞች',
                     style: TextStyle(
@@ -397,12 +397,12 @@ class _NamesCard extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     'አስማኡል ሁስና',
                     style: TextStyle(color: AppColors.textSoft, fontSize: 12),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'ይክፈቱ ›',
                     style: TextStyle(color: AppColors.muted, fontSize: 12),
