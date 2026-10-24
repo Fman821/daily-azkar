@@ -38,7 +38,7 @@ class DuasTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'ዝርዝሮች',
             style: TextStyle(
               color: AppColors.textSoft,
@@ -164,7 +164,7 @@ class _ListCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gold,
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
@@ -173,12 +173,12 @@ class _ListCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(color: AppColors.textSoft, fontSize: 12.5),
+                      style: TextStyle(color: AppColors.textSoft, fontSize: 12.5),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.gold),
+              Icon(Icons.chevron_right, color: AppColors.gold),
             ],
           ),
         ),

@@ -158,7 +158,7 @@ class _GroupTitle extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textSoft,
             fontSize: 15,
             fontWeight: FontWeight.w700,
@@ -215,7 +215,7 @@ class _CategoryTile extends StatelessWidget {
                     category.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.gold,
                       fontSize: 15.5,
                       fontWeight: FontWeight.w800,
@@ -235,7 +235,7 @@ class _CategoryTile extends StatelessWidget {
                   const SizedBox(height: 5),
                   Text(
                     '$done / $total',
-                    style: const TextStyle(color: AppColors.textSoft, fontSize: 11.5),
+                    style: TextStyle(color: AppColors.textSoft, fontSize: 11.5),
                   ),
                 ],
               ),

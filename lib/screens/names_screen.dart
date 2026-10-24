@@ -69,7 +69,7 @@ class _NamesScreenState extends State<NamesScreen> {
           ),
           Expanded(
             child: visible.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'ምንም አልተገኘም',
                       style: TextStyle(color: AppColors.muted),
@@ -99,7 +99,7 @@ class _NamesScreenState extends State<NamesScreen> {
                                 ),
                                 child: Text(
                                   '${n.number}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
                                     color: AppColors.gold,
                                   ),
@@ -113,7 +113,7 @@ class _NamesScreenState extends State<NamesScreen> {
                                   children: [
                                     Text(
                                       n.transliteration,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                         color: AppColors.gold,

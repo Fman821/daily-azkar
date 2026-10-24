@@ -142,10 +142,10 @@ class _Greeting extends StatelessWidget {
             children: [
               Text(
                 name.isEmpty ? 'ሰላም' : 'ሰላም አለይኩም፣ $name',
-                style: const TextStyle(color: AppColors.muted, fontSize: 14),
+                style: TextStyle(color: AppColors.muted, fontSize: 14),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'እስላማዊ አዝካር',
                 style: TextStyle(
                   color: AppColors.gold,
@@ -222,7 +222,7 @@ class _VerseCard extends StatelessWidget {
             ),
             child: Text(
               ayah.reference,
-              style: const TextStyle(fontSize: 12, color: AppColors.gold),
+              style: TextStyle(fontSize: 12, color: AppColors.gold),
             ),
           ),
         ],
@@ -240,7 +240,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppColors.textSoft,
         fontSize: 15,
         fontWeight: FontWeight.w700,
@@ -291,7 +291,7 @@ class _PeriodCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     category.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.gold,
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -302,12 +302,12 @@ class _PeriodCard extends StatelessWidget {
                     category.subtitle,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.textSoft, fontSize: 12),
+                    style: TextStyle(color: AppColors.textSoft, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '${category.items.length} አዝካሮች ›',
-                    style: const TextStyle(color: AppColors.muted, fontSize: 12),
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
                   ),
                 ],
               ),
@@ -333,7 +333,7 @@ class _SoonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.lock_clock_outlined, color: AppColors.muted, size: 34),

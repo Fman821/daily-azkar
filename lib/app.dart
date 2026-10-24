@@ -25,11 +25,19 @@ class AzkarApp extends StatelessWidget {
         ChangeNotifierProvider<AzkarPlayer>(create: (_) => AzkarPlayer()),
         Provider<Content>.value(value: content),
       ],
-      child: MaterialApp(
-        title: 'እስላማዊ አዝካር',
-        debugShowCheckedModeBanner: false,
-        theme: buildTheme(),
-        home: const RootShell(),
+      // Rebuilt whenever the chosen palette changes. The key makes Flutter
+      // rebuild the whole tree, so every screen picks up the new colours.
+      child: Consumer<AppState>(
+        builder: (context, appState, _) {
+          AppColors.select(appState.themeIndex);
+          return MaterialApp(
+            key: ValueKey(appState.themeIndex),
+            title: 'እስላማዊ አዝካር',
+            debugShowCheckedModeBanner: false,
+            theme: buildTheme(),
+            home: const RootShell(),
+          );
+        },
       ),
     );
   }

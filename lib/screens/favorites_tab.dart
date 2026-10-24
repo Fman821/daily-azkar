@@ -20,7 +20,7 @@ class FavoritesTab extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('ተወዳጆች')),
       body: items.isEmpty
-          ? const Center(
+          ? Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(

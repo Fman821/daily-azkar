@@ -129,7 +129,7 @@ class TasbihScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [Color(0xFF137A63), AppColors.cardDeep],
@@ -142,13 +142,13 @@ class TasbihScreen extends StatelessWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
+                              Text(
                                 'ተስቢሕ',
                                 style: TextStyle(color: AppColors.muted, fontSize: 13, letterSpacing: 1),
                               ),
                               Text(
                                 '$inRound',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 76,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.gold,
@@ -157,7 +157,7 @@ class TasbihScreen extends StatelessWidget {
                               ),
                               Text(
                                 target > 0 ? 'ከ $target' : 'ጠቅላላ $count',
-                                style: const TextStyle(color: AppColors.textSoft, fontSize: 15),
+                                style: TextStyle(color: AppColors.textSoft, fontSize: 15),
                               ),
                             ],
                           ),
@@ -178,7 +178,7 @@ class TasbihScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 14),
               child: Text('ክብሩን ነክተው ይቁጠሩ', style: TextStyle(color: AppColors.muted)),
             ),
@@ -206,8 +206,8 @@ class _Stat extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(value, style: const TextStyle(color: AppColors.gold, fontSize: 22, fontWeight: FontWeight.w800)),
-          Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 12)),
+          Text(value, style: TextStyle(color: AppColors.gold, fontSize: 22, fontWeight: FontWeight.w800)),
+          Text(label, style: TextStyle(color: AppColors.muted, fontSize: 12)),
         ],
       ),
     );

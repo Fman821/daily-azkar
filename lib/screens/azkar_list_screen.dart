@@ -38,7 +38,7 @@ class AzkarListScreen extends StatelessWidget {
                   Text(
                     category.subtitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.muted),
+                    style: TextStyle(color: AppColors.muted),
                   ),
                   if (category.id == 'morning' || category.id == 'evening') ...[
                     const SizedBox(height: 12),
@@ -86,13 +86,13 @@ class _FullRecitationCard extends StatelessWidget {
     return Card(
       color: AppColors.card,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: AppColors.gold),
+        side: BorderSide(color: AppColors.gold),
         borderRadius: BorderRadius.circular(16),
       ),
       child: ListTile(
-        leading: const Icon(Icons.headphones, color: AppColors.gold, size: 30),
-        title: Text(title, style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
-        subtitle: const Text('ከኢንተርኔት ውጭም ማዳመጥ ይቻላል', style: TextStyle(color: AppColors.textSoft)),
+        leading: Icon(Icons.headphones, color: AppColors.gold, size: 30),
+        title: Text(title, style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
+        subtitle: Text('ከኢንተርኔት ውጭም ማዳመጥ ይቻላል', style: TextStyle(color: AppColors.textSoft)),
         trailing: IconButton(
           tooltip: playing ? 'አቁም' : 'አዳምጥ',
           icon: Icon(playing ? Icons.pause_circle_filled : Icons.play_circle_fill, color: AppColors.gold, size: 36),

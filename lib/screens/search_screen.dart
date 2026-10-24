@@ -67,14 +67,14 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           Expanded(
             child: q.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'ቃል ጻፍ',
                       style: TextStyle(color: AppColors.muted),
                     ),
                   )
                 : results.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'ምንም አልተገኘም',
                           style: TextStyle(color: AppColors.muted),

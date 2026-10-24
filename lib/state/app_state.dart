@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../theme.dart';
+
 /// User data kept on the device: favourites, dhikr counters, tasbih, name and
 /// text size. Every change is saved to SharedPreferences and then notifies the UI.
 class AppState extends ChangeNotifier {
@@ -18,6 +20,7 @@ class AppState extends ChangeNotifier {
     _showAmharic = _prefs.getBool(_kShowAmharic) ?? true;
     _hapticOn = _prefs.getBool(_kHaptic) ?? true;
     _tasbihTarget = _prefs.getInt(_kTasbihTarget) ?? 33;
+    _themeIndex = _prefs.getInt(_kTheme) ?? defaultPaletteIndex;
   }
 
   static const _kFavorites = 'favorites';
@@ -30,6 +33,7 @@ class AppState extends ChangeNotifier {
   static const _kShowAmharic = 'showAmharic';
   static const _kHaptic = 'haptic';
   static const _kTasbihTarget = 'tasbihTarget';
+  static const _kTheme = 'themeIndex';
 
   static Future<AppState> create() async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,6 +51,7 @@ class AppState extends ChangeNotifier {
   late bool _showAmharic;
   late bool _hapticOn;
   late int _tasbihTarget;
+  late int _themeIndex;
 
   Set<String> get favorites => Set.unmodifiable(_favorites);
   bool isFavorite(String key) => _favorites.contains(key);
@@ -61,6 +66,14 @@ class AppState extends ChangeNotifier {
   bool get showAmharic => _showAmharic;
   bool get hapticOn => _hapticOn;
   int get tasbihTarget => _tasbihTarget;
+  int get themeIndex => _themeIndex;
+
+  void setTheme(int index) {
+    if (index == _themeIndex) return;
+    _themeIndex = index;
+    unawaited(_prefs.setInt(_kTheme, index));
+    notifyListeners();
+  }
 
   void toggleFavorite(String key) {
     if (!_favorites.remove(key)) {

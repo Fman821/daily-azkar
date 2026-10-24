@@ -43,7 +43,7 @@ class GoldCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [Color(0xFF0F3B29), AppColors.cardDeep],
@@ -86,7 +86,7 @@ class GoldBadge extends StatelessWidget {
               width: diamond,
               height: diamond,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [Color(0xFF0F3B29), AppColors.cardDeep],
@@ -227,7 +227,7 @@ class TileBody extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: AppColors.gold,
@@ -236,7 +236,7 @@ class TileBody extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           subtitle,
-          style: const TextStyle(fontSize: 12, color: AppColors.textSoft),
+          style: TextStyle(fontSize: 12, color: AppColors.textSoft),
         ),
         const SizedBox(height: 10),
         Row(
@@ -251,7 +251,7 @@ class TileBody extends StatelessWidget {
                 ),
                 child: Text(
                   '$count አዝካሮች',
-                  style: const TextStyle(color: AppColors.gold, fontSize: 12),
+                  style: TextStyle(color: AppColors.gold, fontSize: 12),
                 ),
               ),
             const Spacer(),

@@ -76,7 +76,7 @@ class DhikrCard extends StatelessWidget {
                   backgroundColor: AppColors.goldDark,
                   child: Text(
                     '$index',
-                    style: const TextStyle(fontSize: 12, color: AppColors.text),
+                    style: TextStyle(fontSize: 12, color: AppColors.text),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -106,7 +106,7 @@ class DhikrCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
                 tooltip: 'አጋራ',
                 onPressed: _share,
-                icon: const Icon(Icons.share_outlined, color: AppColors.gold),
+                icon: Icon(Icons.share_outlined, color: AppColors.gold),
               ),
               IconButton(
                 visualDensity: VisualDensity.compact,
@@ -134,7 +134,7 @@ class DhikrCard extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(color: AppColors.border, height: 24),
+          Divider(color: AppColors.border, height: 24),
           if (state.showTranslit && dhikr.translit.isNotEmpty) ...[
             Text(
               dhikr.translit,
@@ -191,7 +191,7 @@ class DhikrCard extends StatelessWidget {
                   tooltip: 'ዳግም አስጀምር',
                   onPressed: () =>
                       context.read<AppState>().resetDhikr(dhikr.key),
-                  icon: const Icon(Icons.refresh, color: AppColors.muted),
+                  icon: Icon(Icons.refresh, color: AppColors.muted),
                 ),
             ],
           ),

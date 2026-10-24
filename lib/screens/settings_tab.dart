@@ -93,13 +93,13 @@ class SettingsTab extends StatelessWidget {
                   value: state.showTranslit,
                   onChanged: (v) => context.read<AppState>().setShowTranslit(v),
                 ),
-                const Divider(height: 1, color: AppColors.border),
+                Divider(height: 1, color: AppColors.border),
                 _SwitchRow(
                   title: 'የአማርኛ ትርጉም አሳይ',
                   value: state.showAmharic,
                   onChanged: (v) => context.read<AppState>().setShowAmharic(v),
                 ),
-                const Divider(height: 1, color: AppColors.border),
+                Divider(height: 1, color: AppColors.border),
                 _SwitchRow(
                   title: 'የንዝረት ምልክት',
                   subtitle: 'ሲቆጥሩ ትንሽ ይንዘፈዘፋል',
@@ -109,6 +109,9 @@ class SettingsTab extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 18),
+          const _Section('ገጽታ (Theme)'),
+          const _ThemePicker(),
           const SizedBox(height: 18),
           const _Section('ማስታወሻ'),
           const _AzkarReminderCard(),
@@ -120,11 +123,11 @@ class SettingsTab extends StatelessWidget {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: const _SettingIcon(icon: Icons.restart_alt),
-              title: const Text(
+              title: Text(
                 'ቆጠራዎችን አጽዳ',
                 style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700),
               ),
-              subtitle: const Text(
+              subtitle: Text(
                 'የዚክር ቆጠራና የተስቢህ ቆጣሪ ወደ 0',
                 style: TextStyle(color: AppColors.muted),
               ),
@@ -133,7 +136,7 @@ class SettingsTab extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           const _Section('ስለ መተግበሪያው'),
-          const GoldCard(
+          GoldCard(
             padding: EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -154,6 +157,92 @@ class SettingsTab extends StatelessWidget {
   }
 }
 
+/// Amharic names for the five palettes, in the same order as [azkarPalettes].
+const List<String> _paletteLabels = [
+  'ብርሃናማ (Sacred Light)',
+  'ሌሊታማ ኦቶማን (Midnight Ottoman)',
+  'ብርጭቆ 3D (Glass 3D)',
+  'መስጊድ (Masjid)',
+  'ጨለማ ኤመራልድ (Dark Emerald)',
+];
+
+/// Lets the user pick one of the five colour themes. The choice is saved.
+class _ThemePicker extends StatelessWidget {
+  const _ThemePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final selected = state.themeIndex;
+
+    return GoldCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < azkarPalettes.length; i++) ...[
+            if (i > 0) Divider(height: 1, color: AppColors.border),
+            InkWell(
+              onTap: () => context.read<AppState>().setTheme(i),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    _Swatch(palette: azkarPalettes[i]),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        _paletteLabels[i],
+                        style: TextStyle(
+                          color: i == selected ? AppColors.gold : AppColors.text,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      i == selected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: i == selected ? AppColors.gold : AppColors.muted,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Small preview of a palette: background, card and accent colours.
+class _Swatch extends StatelessWidget {
+  const _Swatch({required this.palette});
+
+  final AzkarPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 36,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: palette.bg,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: palette.border),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: Container(color: palette.card)),
+          Expanded(child: Container(color: palette.gold)),
+          Expanded(child: Container(color: palette.accent)),
+        ],
+      ),
+    );
+  }
+}
+
 /// Small heading above each group of settings.
 class _Section extends StatelessWidget {
   const _Section(this.title);
@@ -166,7 +255,7 @@ class _Section extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textSoft,
           fontSize: 13,
           fontWeight: FontWeight.w700,
@@ -194,7 +283,7 @@ class _SliderRow extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: AppColors.gold,
@@ -203,7 +292,7 @@ class _SliderRow extends StatelessWidget {
             ),
             Text(
               '${(value * 100).round()}%',
-              style: const TextStyle(color: AppColors.muted),
+              style: TextStyle(color: AppColors.muted),
             ),
           ],
         ),
@@ -236,10 +325,10 @@ class _SwitchRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      title: Text(title, style: const TextStyle(color: AppColors.text)),
+      title: Text(title, style: TextStyle(color: AppColors.text)),
       subtitle: subtitle == null
           ? null
-          : Text(subtitle!, style: const TextStyle(color: AppColors.muted)),
+          : Text(subtitle!, style: TextStyle(color: AppColors.muted)),
       value: value,
       onChanged: onChanged,
     );
@@ -387,12 +476,12 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
   @override
   Widget build(BuildContext context) => GoldCard(
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Row(children: [
+      Row(children: [
         _SettingIcon(icon: Icons.notifications_active_outlined), SizedBox(width: 12),
         Expanded(child: Text('የጠዋትና የማታ ማስታወሻ', style: TextStyle(color: AppColors.gold, fontSize: 16, fontWeight: FontWeight.w700))),
       ]),
       const SizedBox(height: 8),
-      const Text('“አዝካር ማለትዎን አይርሱ” የሚል ዕለታዊ ማሳሰቢያ።', style: TextStyle(color: AppColors.muted)),
+      Text('“አዝካር ማለትዎን አይርሱ” የሚል ዕለታዊ ማሳሰቢያ።', style: TextStyle(color: AppColors.muted)),
       SwitchListTile(
         contentPadding: EdgeInsets.zero,
         title: const Text('ማስታወሻዎችን አብራ'),
@@ -413,10 +502,10 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
           ),
         ),
       ),
-      ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.wb_sunny_outlined, color: AppColors.gold), title: const Text('የጠዋት አዝካር'), trailing: Text(_format(_morning), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(true)),
-      ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.nightlight_outlined, color: AppColors.gold), title: const Text('የማታ አዝካር'), trailing: Text(_format(_evening), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(false)),
+      ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.wb_sunny_outlined, color: AppColors.gold), title: const Text('የጠዋት አዝካር'), trailing: Text(_format(_morning), style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(true)),
+      ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.nightlight_outlined, color: AppColors.gold), title: const Text('የማታ አዝካር'), trailing: Text(_format(_evening), style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(false)),
       const SizedBox(height: 4),
-      const Text('መደበኛ ሰዓት፦ ጠዋት 06:00፣ ማታ 18:00 (የኢትዮጵያ ሰዓት። ሊቀየር ይችላል።)', style: TextStyle(fontSize: 11, color: AppColors.muted)),
+      Text('መደበኛ ሰዓት፦ ጠዋት 06:00፣ ማታ 18:00 (የኢትዮጵያ ሰዓት። ሊቀየር ይችላል።)', style: TextStyle(fontSize: 11, color: AppColors.muted)),
     ]),
   );
 }
