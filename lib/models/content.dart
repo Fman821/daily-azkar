@@ -10,7 +10,6 @@ class Dhikr {
     required this.title,
     required this.arabic,
     required this.amharic,
-    this.translit = '',
     required this.repeat,
     required this.source,
     this.audio = '',
@@ -21,9 +20,6 @@ class Dhikr {
   final String title;
   final String arabic;
   final String amharic;
-
-  /// Amharic letters that show how the Arabic is read aloud.
-  final String translit;
   final int repeat;
   final String source;
 
@@ -40,7 +36,6 @@ class Dhikr {
       title: json['title'] as String? ?? '',
       arabic: json['ar'] as String,
       amharic: json['am'] as String,
-      translit: json['translit'] as String? ?? '',
       repeat: json['repeat'] as int? ?? 1,
       source: json['source'] as String? ?? '',
       audio: json['audio'] as String? ?? '',

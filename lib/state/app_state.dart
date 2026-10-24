@@ -13,11 +13,6 @@ class AppState extends ChangeNotifier {
     _tasbih = _prefs.getInt(_kTasbih) ?? 0;
     _name = _prefs.getString(_kName) ?? '';
     _fontScale = _prefs.getDouble(_kFontScale) ?? 1.0;
-    _arabicScale = _prefs.getDouble(_kArabicScale) ?? 1.0;
-    _showTranslit = _prefs.getBool(_kShowTranslit) ?? true;
-    _showAmharic = _prefs.getBool(_kShowAmharic) ?? true;
-    _hapticOn = _prefs.getBool(_kHaptic) ?? true;
-    _tasbihTarget = _prefs.getInt(_kTasbihTarget) ?? 33;
   }
 
   static const _kFavorites = 'favorites';
@@ -25,11 +20,6 @@ class AppState extends ChangeNotifier {
   static const _kTasbih = 'tasbih';
   static const _kName = 'name';
   static const _kFontScale = 'fontScale';
-  static const _kArabicScale = 'arabicScale';
-  static const _kShowTranslit = 'showTranslit';
-  static const _kShowAmharic = 'showAmharic';
-  static const _kHaptic = 'haptic';
-  static const _kTasbihTarget = 'tasbihTarget';
 
   static Future<AppState> create() async {
     final prefs = await SharedPreferences.getInstance();
@@ -42,11 +32,6 @@ class AppState extends ChangeNotifier {
   late int _tasbih;
   late String _name;
   late double _fontScale;
-  late double _arabicScale;
-  late bool _showTranslit;
-  late bool _showAmharic;
-  late bool _hapticOn;
-  late int _tasbihTarget;
 
   Set<String> get favorites => Set.unmodifiable(_favorites);
   bool isFavorite(String key) => _favorites.contains(key);
@@ -56,11 +41,6 @@ class AppState extends ChangeNotifier {
   int get tasbih => _tasbih;
   String get name => _name;
   double get fontScale => _fontScale;
-  double get arabicScale => _arabicScale;
-  bool get showTranslit => _showTranslit;
-  bool get showAmharic => _showAmharic;
-  bool get hapticOn => _hapticOn;
-  int get tasbihTarget => _tasbihTarget;
 
   void toggleFavorite(String key) {
     if (!_favorites.remove(key)) {
@@ -121,36 +101,6 @@ class AppState extends ChangeNotifier {
   void setFontScale(double value) {
     _fontScale = value;
     unawaited(_prefs.setDouble(_kFontScale, value));
-    notifyListeners();
-  }
-
-  void setArabicScale(double value) {
-    _arabicScale = value;
-    unawaited(_prefs.setDouble(_kArabicScale, value));
-    notifyListeners();
-  }
-
-  void setShowTranslit(bool value) {
-    _showTranslit = value;
-    unawaited(_prefs.setBool(_kShowTranslit, value));
-    notifyListeners();
-  }
-
-  void setShowAmharic(bool value) {
-    _showAmharic = value;
-    unawaited(_prefs.setBool(_kShowAmharic, value));
-    notifyListeners();
-  }
-
-  void setHapticOn(bool value) {
-    _hapticOn = value;
-    unawaited(_prefs.setBool(_kHaptic, value));
-    notifyListeners();
-  }
-
-  void setTasbihTarget(int value) {
-    _tasbihTarget = value;
-    unawaited(_prefs.setInt(_kTasbihTarget, value));
     notifyListeners();
   }
 

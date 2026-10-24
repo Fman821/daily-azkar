@@ -52,13 +52,7 @@ class _RootShellState extends State<RootShell> {
   Widget build(BuildContext context) {
     final favCount = context.watch<AppState>().favorites.length;
 
-    // Back on a tab other than home goes to home first, instead of closing the app.
-    return PopScope(
-      canPop: _index == 0,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _selectTab(0);
-      },
-      child: Scaffold(
+    return Scaffold(
       body: IndexedStack(
         index: _index,
         children: [
@@ -107,7 +101,6 @@ class _RootShellState extends State<RootShell> {
             label: 'ቅንብር',
           ),
         ],
-      ),
       ),
     );
   }
