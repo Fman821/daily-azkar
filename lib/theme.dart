@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 
-/// Dark green and gold palette taken from the original mockup.
+/// Emerald and champagne palette. Names stay the same across the app, so a
+/// change here updates every screen.
 class AppColors {
   AppColors._();
 
-  static const bg = Color(0xFF04170F);
-  static const card = Color(0xFF0B2C1F);
-  static const cardDeep = Color(0xFF08241A);
-  static const navBg = Color(0xFF05200F);
-  static const gold = Color(0xFFF0B800);
-  static const goldSoft = Color(0xFFD9A92C);
-  static const goldDark = Color(0xFF8A6D12);
-  static const orange = Color(0xFFF08C00);
-  static const text = Color(0xFFE9EFE9);
-  static const textSoft = Color(0xFFCFE3D6);
-  static const muted = Color(0xFF7FBF9F);
-  static const border = Color(0xFF1B4A35);
+  static const bg = Color(0xFF021A14);
+  static const card = Color(0xFF0A3228);
+  static const cardDeep = Color(0xFF072820);
+  static const navBg = Color(0xFF04231B);
+  static const gold = Color(0xFFF4C95D);
+  static const goldSoft = Color(0xFFE6B95E);
+  static const goldDark = Color(0xFF9C7A22);
+  static const orange = Color(0xFFFF9F43);
+  static const accent = Color(0xFF38C8A0);
+  static const text = Color(0xFFF2F8F4);
+  static const textSoft = Color(0xFFD0E8DA);
+  static const muted = Color(0xFF8FCBB0);
+  static const border = Color(0xFF235E4A);
 }
 
 ThemeData buildTheme() {

@@ -39,10 +39,11 @@ class SettingsTab extends StatelessWidget {
     final state = context.watch<AppState>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ቅንብር (Settings)')),
+      appBar: AppBar(title: const Text('ቅንብር')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         children: [
+          const _Section('ግላዊ'),
           GoldCard(
             child: Row(
               children: [
@@ -62,42 +63,57 @@ class SettingsTab extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ማሳያ'),
           GoldCard(
-            child: Row(
+            child: Column(
               children: [
-                const _SettingIcon(icon: Icons.text_fields),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'የጽሑፍ መጠን',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.gold,
-                        ),
-                      ),
-                      Slider(
-                        min: 0.8,
-                        max: 1.6,
-                        divisions: 8,
-                        value: state.fontScale,
-                        label: '${(state.fontScale * 100).round()}%',
-                        onChanged: (value) =>
-                            context.read<AppState>().setFontScale(value),
-                      ),
-                    ],
-                  ),
+                _SliderRow(
+                  label: 'የትርጉምና የአነባበብ መጠን',
+                  value: state.fontScale,
+                  onChanged: (v) => context.read<AppState>().setFontScale(v),
+                ),
+                const SizedBox(height: 6),
+                _SliderRow(
+                  label: 'የአረብኛ መጠን',
+                  value: state.arabicScale,
+                  onChanged: (v) => context.read<AppState>().setArabicScale(v),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
+          GoldCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                _SwitchRow(
+                  title: 'የአነባበብ ጽሑፍ አሳይ',
+                  subtitle: 'አረብኛው በአማርኛ ፊደል',
+                  value: state.showTranslit,
+                  onChanged: (v) => context.read<AppState>().setShowTranslit(v),
+                ),
+                const Divider(height: 1, color: AppColors.border),
+                _SwitchRow(
+                  title: 'የአማርኛ ትርጉም አሳይ',
+                  value: state.showAmharic,
+                  onChanged: (v) => context.read<AppState>().setShowAmharic(v),
+                ),
+                const Divider(height: 1, color: AppColors.border),
+                _SwitchRow(
+                  title: 'የንዝረት ምልክት',
+                  subtitle: 'ሲቆጥሩ ትንሽ ይንዘፈዘፋል',
+                  value: state.hapticOn,
+                  onChanged: (v) => context.read<AppState>().setHapticOn(v),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          const _Section('ማስታወሻ'),
           const _AzkarReminderCard(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ውሂብ'),
           GoldCard(
             padding: EdgeInsets.zero,
             child: ListTile(
@@ -115,14 +131,15 @@ class SettingsTab extends StatelessWidget {
               onTap: () => _confirmReset(context),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ስለ መተግበሪያው'),
           const GoldCard(
             padding: EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: _SettingIcon(icon: Icons.info_outline),
               title: Text(
-                'የመተግበሪያው መረጃ',
+                'እስላማዊ አዝካር',
                 style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700),
               ),
               subtitle: Text(
@@ -133,6 +150,98 @@ class SettingsTab extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Small heading above each group of settings.
+class _Section extends StatelessWidget {
+  const _Section(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: AppColors.textSoft,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.6,
+        ),
+      ),
+    );
+  }
+}
+
+class _SliderRow extends StatelessWidget {
+  const _SliderRow({required this.label, required this.value, required this.onChanged});
+
+  final String label;
+  final double value;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.gold,
+                ),
+              ),
+            ),
+            Text(
+              '${(value * 100).round()}%',
+              style: const TextStyle(color: AppColors.muted),
+            ),
+          ],
+        ),
+        Slider(
+          min: 0.8,
+          max: 1.6,
+          divisions: 8,
+          value: value,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class _SwitchRow extends StatelessWidget {
+  const _SwitchRow({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      title: Text(title, style: const TextStyle(color: AppColors.text)),
+      subtitle: subtitle == null
+          ? null
+          : Text(subtitle!, style: const TextStyle(color: AppColors.muted)),
+      value: value,
+      onChanged: onChanged,
     );
   }
 }
