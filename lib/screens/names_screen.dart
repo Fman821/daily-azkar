@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +18,21 @@ class NamesScreen extends StatefulWidget {
 
 class _NamesScreenState extends State<NamesScreen> {
   String _query = '';
+  Timer? _debounce;
+
+  /// Waits until the user stops typing for 300 ms before filtering.
+  void _onQueryChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _query = value);
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +60,7 @@ class _NamesScreenState extends State<NamesScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              onChanged: (value) => setState(() => _query = value),
+              onChanged: _onQueryChanged,
               decoration: const InputDecoration(
                 hintText: 'ስም ፈልግ (Search)',
                 prefixIcon: Icon(Icons.search),

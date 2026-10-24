@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../audio/azkar_player.dart';
 import '../models/content.dart';
@@ -25,6 +26,25 @@ class DhikrCard extends StatelessWidget {
         SnackBar(content: Text(error)),
       );
     }
+  }
+
+  /// Shares the dhikr text (Arabic, Amharic meaning, source) through any app.
+  void _share() {
+    final buffer = StringBuffer();
+    buffer.writeln(dhikr.title);
+    buffer.writeln();
+    buffer.writeln(dhikr.arabic);
+    buffer.writeln();
+    if (dhikr.translit.isNotEmpty) {
+      buffer.writeln('አነባበብ: ${dhikr.translit}');
+    }
+    buffer.writeln('ትርጉም: ${dhikr.amharic}');
+    if (dhikr.source.isNotEmpty) {
+      buffer.writeln('ምንጭ: ${dhikr.source}');
+    }
+    buffer.writeln();
+    buffer.write('— እስላማዊ አዝካር');
+    Share.share(buffer.toString(), subject: dhikr.title);
   }
 
   void _tap(BuildContext context) {
@@ -82,6 +102,12 @@ class DhikrCard extends StatelessWidget {
                     size: 28,
                   ),
                 ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: 'አጋራ',
+                onPressed: _share,
+                icon: const Icon(Icons.share_outlined, color: AppColors.gold),
+              ),
               IconButton(
                 visualDensity: VisualDensity.compact,
                 tooltip: isFavorite ? 'ከተወዳጆች አውጣ' : 'ወደ ተወዳጆች ጨምር',
