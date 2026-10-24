@@ -43,6 +43,8 @@ class AzkarReminders {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
+      uiLocalNotificationDateInterpretation:
+    UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
