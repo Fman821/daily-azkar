@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../notifications/azkar_reminders.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -38,10 +39,11 @@ class SettingsTab extends StatelessWidget {
     final state = context.watch<AppState>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ቅንብር (Settings)')),
+      appBar: AppBar(title: const Text('ቅንብር')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         children: [
+          const _Section('ግላዊ'),
           GoldCard(
             child: Row(
               children: [
@@ -61,42 +63,57 @@ class SettingsTab extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ማሳያ'),
           GoldCard(
-            child: Row(
+            child: Column(
               children: [
-                const _SettingIcon(icon: Icons.text_fields),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'የጽሑፍ መጠን',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.gold,
-                        ),
-                      ),
-                      Slider(
-                        min: 0.8,
-                        max: 1.6,
-                        divisions: 8,
-                        value: state.fontScale,
-                        label: '${(state.fontScale * 100).round()}%',
-                        onChanged: (value) =>
-                            context.read<AppState>().setFontScale(value),
-                      ),
-                    ],
-                  ),
+                _SliderRow(
+                  label: 'የትርጉምና የአነባበብ መጠን',
+                  value: state.fontScale,
+                  onChanged: (v) => context.read<AppState>().setFontScale(v),
+                ),
+                const SizedBox(height: 6),
+                _SliderRow(
+                  label: 'የአረብኛ መጠን',
+                  value: state.arabicScale,
+                  onChanged: (v) => context.read<AppState>().setArabicScale(v),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
+          GoldCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                _SwitchRow(
+                  title: 'የአነባበብ ጽሑፍ አሳይ',
+                  subtitle: 'አረብኛው በአማርኛ ፊደል',
+                  value: state.showTranslit,
+                  onChanged: (v) => context.read<AppState>().setShowTranslit(v),
+                ),
+                const Divider(height: 1, color: AppColors.border),
+                _SwitchRow(
+                  title: 'የአማርኛ ትርጉም አሳይ',
+                  value: state.showAmharic,
+                  onChanged: (v) => context.read<AppState>().setShowAmharic(v),
+                ),
+                const Divider(height: 1, color: AppColors.border),
+                _SwitchRow(
+                  title: 'የንዝረት ምልክት',
+                  subtitle: 'ሲቆጥሩ ትንሽ ይንዘፈዘፋል',
+                  value: state.hapticOn,
+                  onChanged: (v) => context.read<AppState>().setHapticOn(v),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          const _Section('ማስታወሻ'),
           const _AzkarReminderCard(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ውሂብ'),
           GoldCard(
             padding: EdgeInsets.zero,
             child: ListTile(
@@ -114,24 +131,117 @@ class SettingsTab extends StatelessWidget {
               onTap: () => _confirmReset(context),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const _Section('ስለ መተግበሪያው'),
           const GoldCard(
             padding: EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               leading: _SettingIcon(icon: Icons.info_outline),
               title: Text(
-                'የመተግበሪያው መረጃ',
+                'እስላማዊ አዝካር',
                 style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700),
               ),
               subtitle: Text(
-                'ቅጽ 1.0.0 (Version 1.0.0)',
+                'ቅጽ 1.2.1 (Version 1.2.1)',
                 style: TextStyle(color: AppColors.muted),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Small heading above each group of settings.
+class _Section extends StatelessWidget {
+  const _Section(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: AppColors.textSoft,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.6,
+        ),
+      ),
+    );
+  }
+}
+
+class _SliderRow extends StatelessWidget {
+  const _SliderRow({required this.label, required this.value, required this.onChanged});
+
+  final String label;
+  final double value;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.gold,
+                ),
+              ),
+            ),
+            Text(
+              '${(value * 100).round()}%',
+              style: const TextStyle(color: AppColors.muted),
+            ),
+          ],
+        ),
+        Slider(
+          min: 0.8,
+          max: 1.6,
+          divisions: 8,
+          value: value,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class _SwitchRow extends StatelessWidget {
+  const _SwitchRow({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      title: Text(title, style: const TextStyle(color: AppColors.text)),
+      subtitle: subtitle == null
+          ? null
+          : Text(subtitle!, style: const TextStyle(color: AppColors.muted)),
+      value: value,
+      onChanged: onChanged,
     );
   }
 }
@@ -165,10 +275,94 @@ class _AzkarReminderCard extends StatefulWidget {
 }
 
 class _AzkarReminderCardState extends State<_AzkarReminderCard> {
+  static const _kOn = 'reminder_on';
+  static const _kMorning = 'reminder_morning';
+  static const _kEvening = 'reminder_evening';
+  static const _kMode = 'reminder_mode';
+
   bool _enabled = false;
+  ReminderMode _mode = ReminderMode.alarm;
   TimeOfDay _morning = const TimeOfDay(hour: 6, minute: 0);
   TimeOfDay _evening = const TimeOfDay(hour: 18, minute: 0);
-  bool _saving = false;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  /// Reads the saved reminder settings so the card shows what is really set.
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _enabled = prefs.getBool(_kOn) ?? false;
+      _morning = _fromMinutes(prefs.getInt(_kMorning) ?? 6 * 60);
+      _evening = _fromMinutes(prefs.getInt(_kEvening) ?? 18 * 60);
+      _mode = ReminderMode.fromStorage(prefs.getString(_kMode));
+      _ready = true;
+    });
+  }
+
+  static TimeOfDay _fromMinutes(int m) => TimeOfDay(hour: m ~/ 60, minute: m % 60);
+  static int _toMinutes(TimeOfDay t) => t.hour * 60 + t.minute;
+
+  /// Saves the settings and rebuilds the reminders. Returns false if the
+  /// reminders could not be turned on (permission refused or an error).
+  Future<bool> _apply({
+    required bool enabled,
+    required ReminderMode mode,
+    required TimeOfDay morning,
+    required TimeOfDay evening,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      if (enabled) {
+        final granted = await AzkarReminders.instance.requestPermission();
+        if (granted != true) {
+          messenger.showSnackBar(const SnackBar(
+            content: Text('ማሳወቂያ እንዲታይ ፍቃድ መስጠት አለብዎት።'),
+          ));
+          return false;
+        }
+      }
+      await AzkarReminders.instance.configure(
+        enabled: enabled,
+        mode: mode,
+        morningHour: morning.hour, morningMinute: morning.minute,
+        eveningHour: evening.hour, eveningMinute: evening.minute,
+      );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kOn, enabled);
+      await prefs.setInt(_kMorning, _toMinutes(morning));
+      await prefs.setInt(_kEvening, _toMinutes(evening));
+      await prefs.setString(_kMode, mode.storageValue);
+      if (enabled) {
+        messenger.showSnackBar(const SnackBar(
+          content: Text('የጠዋትና የማታ ማስታወሻ ተቀናብሯል።'),
+        ));
+      }
+      return true;
+    } catch (e) {
+      // Shows the real error so it can be reported and fixed.
+      messenger.showSnackBar(SnackBar(
+        duration: const Duration(seconds: 10),
+        content: Text('ማስታወሻውን ማቀናበር አልተቻለም። ($e)'),
+      ));
+      return false;
+    }
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    final ok = await _apply(enabled: value, mode: _mode, morning: _morning, evening: _evening);
+    if (ok && mounted) setState(() => _enabled = value);
+  }
+
+  Future<void> _setMode(ReminderMode mode) async {
+    final ok = await _apply(enabled: _enabled, mode: mode, morning: _morning, evening: _evening);
+    if (ok && mounted) setState(() => _mode = mode);
+  }
 
   Future<void> _pick(bool morning) async {
     final picked = await showTimePicker(
@@ -176,28 +370,16 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       initialTime: morning ? _morning : _evening,
       helpText: morning ? 'የጠዋት አዝካር ሰዓት' : 'የማታ አዝካር ሰዓት',
     );
-    if (picked != null && mounted) {
-      setState(() { if (morning) { _morning = picked; } else { _evening = picked; } });
+    if (picked == null || !mounted) return;
+    final newMorning = morning ? picked : _morning;
+    final newEvening = morning ? _evening : picked;
+    final ok = await _apply(enabled: _enabled, mode: _mode, morning: newMorning, evening: newEvening);
+    if (ok && mounted) {
+      setState(() {
+        _morning = newMorning;
+        _evening = newEvening;
+      });
     }
-  }
-
-  Future<void> _save() async {
-    setState(() => _saving = true);
-    try {
-      if (_enabled) await AzkarReminders.instance.requestPermission();
-      await AzkarReminders.instance.configure(
-        enabled: _enabled,
-        morningHour: _morning.hour, morningMinute: _morning.minute,
-        eveningHour: _evening.hour, eveningMinute: _evening.minute,
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(_enabled ? 'የጠዋትና የማታ ማስታወሻ ተቀናብሯል።' : 'የአዝካር ማስታወሻ ጠፍቷል።'),
-      ));
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('ማስታወሻውን ማቀናበር አልተቻለም። የnotification ፈቃድን ይመልከቱ።'),
-      ));
-    } finally { if (mounted) setState(() => _saving = false); }
   }
 
   String _format(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -211,10 +393,28 @@ class _AzkarReminderCardState extends State<_AzkarReminderCard> {
       ]),
       const SizedBox(height: 8),
       const Text('“አዝካር ማለትዎን አይርሱ” የሚል ዕለታዊ ማሳሰቢያ።', style: TextStyle(color: AppColors.muted)),
-      SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('ማስታወሻዎችን አብራ'), value: _enabled, onChanged: (v) => setState(() => _enabled = v)),
+      SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: const Text('ማስታወሻዎችን አብራ'),
+        value: _enabled,
+        onChanged: _ready ? (v) => _setEnabled(v) : null,
+      ),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<ReminderMode>(
+            segments: const [
+              ButtonSegment(value: ReminderMode.alarm, icon: Icon(Icons.alarm), label: Text('አላርም')),
+              ButtonSegment(value: ReminderMode.notification, icon: Icon(Icons.notifications_none), label: Text('ማሳወቂያ')),
+            ],
+            selected: {_mode},
+            onSelectionChanged: _ready && _enabled ? (s) => _setMode(s.first) : null,
+          ),
+        ),
+      ),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.wb_sunny_outlined, color: AppColors.gold), title: const Text('የጠዋት አዝካር'), trailing: Text(_format(_morning), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(true)),
       ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.nightlight_outlined, color: AppColors.gold), title: const Text('የማታ አዝካር'), trailing: Text(_format(_evening), style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)), onTap: () => _pick(false)),
-      SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: _saving ? null : _save, icon: const Icon(Icons.save_outlined), label: Text(_saving ? 'በመቀመጥ ላይ…' : 'ማስታወሻውን አስቀምጥ'))),
       const SizedBox(height: 4),
       const Text('መደበኛ ሰዓት፦ ጠዋት 06:00፣ ማታ 18:00 (የኢትዮጵያ ሰዓት። ሊቀየር ይችላል።)', style: TextStyle(fontSize: 11, color: AppColors.muted)),
     ]),

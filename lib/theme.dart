@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 
-/// Refined emerald-and-gold theme for Daily Azkar.
+/// Emerald and champagne palette. Names stay the same across the app, so a
+/// change here updates every screen.
 class AppColors {
   AppColors._();
 
-  static const bg = Color(0xFF07130F);
-  static const card = Color(0xFF10271E);
-  static const cardDeep = Color(0xFF0B2018);
-  static const navBg = Color(0xFF091A13);
-  static const gold = Color(0xFFE8C46A);
-  static const goldSoft = Color(0xFFF3DDA0);
-  static const goldDark = Color(0xFF806B36);
-  static const orange = Color(0xFFE5A84B);
-  static const text = Color(0xFFF5F5EF);
-  static const textSoft = Color(0xFFD4E2D8);
-  static const muted = Color(0xFF91B3A0);
-  static const border = Color(0xFF294A39);
+  static const bg = Color(0xFF021A14);
+  static const card = Color(0xFF0A3228);
+  static const cardDeep = Color(0xFF072820);
+  static const navBg = Color(0xFF04231B);
+  static const gold = Color(0xFFF4C95D);
+  static const goldSoft = Color(0xFFE6B95E);
+  static const goldDark = Color(0xFF9C7A22);
+  static const orange = Color(0xFFFF9F43);
+  static const accent = Color(0xFF38C8A0);
+  static const text = Color(0xFFF2F8F4);
+  static const textSoft = Color(0xFFD0E8DA);
+  static const muted = Color(0xFF8FCBB0);
+  static const border = Color(0xFF235E4A);
 }
 
 ThemeData buildTheme() {
-  const scheme = ColorScheme.dark(
+  final scheme = ColorScheme.dark(
     primary: AppColors.gold,
-    onPrimary: Color(0xFF211A08),
+    onPrimary: const Color(0xFF2A1700),
     secondary: AppColors.goldSoft,
-    onSecondary: Color(0xFF211A08),
+    onSecondary: const Color(0xFF2A1700),
     surface: AppColors.card,
     onSurface: AppColors.text,
-    error: Color(0xFFFF8A80),
   );
 
   return ThemeData(
@@ -35,71 +36,41 @@ ThemeData buildTheme() {
     scaffoldBackgroundColor: AppColors.bg,
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.bg,
-      foregroundColor: AppColors.text,
+      foregroundColor: AppColors.gold,
       elevation: 0,
-      centerTitle: false,
+      centerTitle: true,
       titleTextStyle: TextStyle(
-        color: AppColors.text,
-        fontSize: 21,
+        color: AppColors.gold,
+        fontSize: 20,
         fontWeight: FontWeight.w700,
-        letterSpacing: .1,
-      ),
-    ),
-    cardTheme: CardThemeData(
-      color: AppColors.card,
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: const BorderSide(color: AppColors.border, width: .7),
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: AppColors.navBg,
-      elevation: 0,
-      height: 72,
-      indicatorColor: AppColors.gold.withAlpha(38),
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
-        fontSize: 11,
-        fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
-        color: states.contains(WidgetState.selected) ? AppColors.gold : AppColors.muted,
-      )),
-      iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
-        size: 23,
-        color: states.contains(WidgetState.selected) ? AppColors.gold : AppColors.muted,
-      )),
+      indicatorColor: AppColors.gold.withAlpha(45),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontSize: 12,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.gold
+              : AppColors.muted,
+        ),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? AppColors.gold
+              : AppColors.muted,
+        ),
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.cardDeep,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      hintStyle: const TextStyle(color: AppColors.muted),
+      fillColor: AppColors.card,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.gold, width: 1.4),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.goldDark),
       ),
     ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: AppColors.gold,
-        foregroundColor: const Color(0xFF211A08),
-        minimumSize: const Size(0, 50),
-        textStyle: const TextStyle(fontWeight: FontWeight.w700),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-    ),
-    iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(foregroundColor: AppColors.gold),
-    ),
-    dividerTheme: const DividerThemeData(color: AppColors.border, thickness: .7),
   );
 }

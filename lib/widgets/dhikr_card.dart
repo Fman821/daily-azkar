@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../audio/azkar_player.dart';
@@ -24,6 +25,12 @@ class DhikrCard extends StatelessWidget {
         SnackBar(content: Text(error)),
       );
     }
+  }
+
+  void _tap(BuildContext context) {
+    final state = context.read<AppState>();
+    state.tapDhikr(dhikr.key, dhikr.repeat);
+    if (state.hapticOn) HapticFeedback.lightImpact();
   }
 
   @override
@@ -95,14 +102,26 @@ class DhikrCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Quran',
-                fontSize: 24 * scale,
+                fontSize: 24 * scale * state.arabicScale,
                 height: 2.0,
                 color: Colors.white,
               ),
             ),
           ),
           const Divider(color: AppColors.border, height: 24),
-          Text(
+          if (state.showTranslit && dhikr.translit.isNotEmpty) ...[
+            Text(
+              dhikr.translit,
+              style: TextStyle(
+                fontSize: 15 * scale,
+                height: 1.7,
+                color: AppColors.goldSoft,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (state.showAmharic) Text(
             dhikr.amharic,
             style: TextStyle(
               fontSize: 15 * scale,
@@ -135,9 +154,7 @@ class DhikrCard extends StatelessWidget {
               FilledButton.tonal(
                 onPressed: done
                     ? null
-                    : () => context
-                        .read<AppState>()
-                        .tapDhikr(dhikr.key, dhikr.repeat),
+                    : () => _tap(context),
                 child: Text(
                   done ? 'ተጠናቋል ✓' : '+1  ($count/${dhikr.repeat})',
                 ),

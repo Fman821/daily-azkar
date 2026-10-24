@@ -4,14 +4,9 @@ on:
   push:
   workflow_dispatch:
 
-concurrency:
-  group: build-apk-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Get the code
         uses: actions/checkout@v4
@@ -33,52 +28,8 @@ jobs:
           flutter create --project-name daily_azkar --platforms=android --org com.example .
           rm -f test/widget_test.dart
 
-      - name: Patch Android manifest and Gradle (permissions, app name, desugaring)
-        run: |
-          python3 - <<'PY'
-          import pathlib, re, sys
-
-          # ---- AndroidManifest.xml ----
-          mf = pathlib.Path('android/app/src/main/AndroidManifest.xml')
-          t = mf.read_text(encoding='utf-8')
-          perms = ['INTERNET', 'POST_NOTIFICATIONS', 'RECEIVE_BOOT_COMPLETED']
-          add = ''.join(
-              '\n    <uses-permission android:name="android.permission.%s"/>' % p
-              for p in perms if 'android.permission.%s"' % p not in t
-          )
-          t = re.sub(r'(<manifest[^>]*>)', lambda m: m.group(1) + add, t, count=1)
-          t = re.sub(r'android:label="[^"]*"', 'android:label="እስላማዊ አዝካር"', t, count=1)
-          mf.write_text(t, encoding='utf-8')
-
-          # ---- app/build.gradle(.kts): core library desugaring ----
-          # flutter_local_notifications needs this, otherwise the release build fails.
-          kts = pathlib.Path('android/app/build.gradle.kts')
-          groovy = pathlib.Path('android/app/build.gradle')
-          if kts.exists():
-              g, is_kts = kts, True
-          elif groovy.exists():
-              g, is_kts = groovy, False
-          else:
-              sys.exit('No android/app/build.gradle(.kts) found')
-
-          s = g.read_text(encoding='utf-8')
-          if 'oreLibraryDesugaring' not in s:
-              flag = ('isCoreLibraryDesugaringEnabled = true' if is_kts
-                      else 'coreLibraryDesugaringEnabled true')
-              s, n = re.subn(r'(compileOptions\s*\{)', lambda m: m.group(1) + '\n        ' + flag, s, count=1)
-              if n != 1:
-                  sys.exit('compileOptions block not found in ' + str(g))
-              dep = ('coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' if is_kts
-                     else "coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'")
-              s += '\ndependencies {\n    ' + dep + '\n}\n'
-              g.write_text(s, encoding='utf-8')
-          PY
-          echo "=== AndroidManifest.xml ==="
-          cat android/app/src/main/AndroidManifest.xml
-          echo "=== app gradle ==="
-          cat android/app/build.gradle* 
-          grep -q 'android.permission.INTERNET' android/app/src/main/AndroidManifest.xml
-          grep -q 'oreLibraryDesugaring' android/app/build.gradle*
+      - name: Patch Android project (permissions, reminders, app name)
+        run: python3 tool/patch_android.py .
 
       - name: Install packages
         run: flutter pub get
@@ -98,4 +49,3 @@ jobs:
         with:
           name: daily-azkar-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error

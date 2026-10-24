@@ -63,99 +63,54 @@ class HomeTab extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
         children: [
-          _Header(name: state.name),
-          const SizedBox(height: 20),
-          GoldCard(
-            child: Column(
-              children: [
-                Text(
-                  ayah.arabic,
-                  textAlign: TextAlign.center,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    fontFamily: 'Quran',
-                    fontSize: 22 * state.fontScale,
-                    height: 1.9,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  ayah.amharic,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15 * state.fontScale,
-                    height: 1.6,
-                    color: AppColors.textSoft,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  ayah.reference,
-                  style: const TextStyle(fontSize: 12, color: AppColors.muted),
-                ),
-              ],
-            ),
+          _Greeting(name: state.name),
+          const SizedBox(height: 18),
+          _VerseCard(
+            ayah: ayah,
+            fontScale: state.fontScale,
+            arabicScale: state.arabicScale,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          const _SectionTitle('ዕለታዊ ዚክሮች'),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
-                child: _CategoryTile(
+                child: _PeriodCard(
                   category: morning,
+                  icon: Icons.wb_twilight,
+                  colors: const [Color(0xFF137A63), Color(0xFF063A2F)],
                   onTap: () => openCategory(context, morning),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _CategoryTile(
+                child: _PeriodCard(
                   category: evening,
+                  icon: Icons.nights_stay_outlined,
+                  colors: const [Color(0xFF0D5A6E), Color(0xFF062A36)],
                   onTap: () => openCategory(context, evening),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
+          const _SectionTitle('በቅርብ'),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
-                child: ImageTile(
-                  image: 'bg_names.jpg',
-                  height: 170,
-                  icon: Icons.auto_awesome_outlined,
+                child: _NamesCard(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => const NamesScreen()),
-                  ),
-                  child: const TileBody(
-                    title: '99 የአላህ ስሞች',
-                    subtitle: 'አስማኡል ሁስና',
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: ImageTile(
-                  image: 'bg_duas.jpg',
-                  height: 170,
-                  icon: Icons.front_hand_outlined,
-                  onTap: () => onOpenTab(2),
-                  child: const TileBody(
-                    title: 'ጸሎቶች',
-                    subtitle: 'ዱዓዎችና ምክሮች',
-                  ),
-                ),
-              ),
+              const Expanded(child: _SoonCard()),
             ],
-          ),
-          const SizedBox(height: 16),
-          const _TasbihCard(),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            onPressed: () => onOpenTab(1),
-            icon: const Icon(Icons.wb_sunny_outlined),
-            label: const Text('ሁሉንም የአዝካር ክፍሎች ይመልከቱ'),
           ),
         ],
       ),
@@ -172,141 +127,291 @@ void openCategory(BuildContext context, AzkarCategory category) {
   );
 }
 
-class _Header extends StatelessWidget {
-  const _Header({required this.name});
+class _Greeting extends StatelessWidget {
+  const _Greeting({required this.name});
 
   final String name;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
-        const GoldBadge(icon: Icons.brightness_high, size: 96),
-        const SizedBox(height: 12),
-        ShaderMask(
-          shaderCallback: (rect) => const LinearGradient(
-            colors: [Color(0xFFFFF1B8), Color(0xFFF0C84A), Color(0xFFB98A14)],
-          ).createShader(rect),
-          child: const Text(
-            'እስላማዊ አዝካር',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name.isEmpty ? 'ሰላም' : 'ሰላም አለይኩም፣ $name',
+                style: const TextStyle(color: AppColors.muted, fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'እስላማዊ አዝካር',
+                style: TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          name.isEmpty ? 'የቀን በረከት ለማስታወስ' : 'ሰላም አለይኩም፣ $name',
-          style: const TextStyle(color: AppColors.textSoft),
-        ),
+        const GoldBadge(icon: Icons.brightness_high, size: 58),
       ],
     );
   }
 }
 
-class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.category, required this.onTap});
+class _VerseCard extends StatelessWidget {
+  const _VerseCard({
+    required this.ayah,
+    required this.fontScale,
+    required this.arabicScale,
+  });
 
-  final AzkarCategory category;
-  final VoidCallback onTap;
+  final _Ayah ayah;
+  final double fontScale;
+  final double arabicScale;
 
   @override
   Widget build(BuildContext context) {
-    return ImageTile(
-      image: category.image,
-      height: 190,
-      icon: iconFor(category.icon),
-      onTap: onTap,
-      child: TileBody(
-        title: category.title,
-        subtitle: category.subtitle,
-        count: category.items.length,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0E7A62), Color(0xFF063B31)],
+        ),
+        border: Border.all(color: AppColors.gold.withAlpha(140)),
+        boxShadow: const [
+          BoxShadow(color: Color(0x80000000), blurRadius: 18, offset: Offset(0, 8)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            ayah.arabic,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+            style: TextStyle(
+              fontFamily: 'Quran',
+              fontSize: 22 * fontScale * arabicScale,
+              height: 1.9,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            ayah.amharic,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15 * fontScale,
+              height: 1.6,
+              color: AppColors.textSoft,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.gold.withAlpha(35),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              ayah.reference,
+              style: const TextStyle(fontSize: 12, color: AppColors.gold),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _TasbihCard extends StatelessWidget {
-  const _TasbihCard();
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.text);
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<AppState>();
-    return GoldCard(
-      child: Row(
-        children: [
-          // Gold ring around the counter.
-          Container(
-            width: 74,
-            height: 74,
-            padding: const EdgeInsets.all(3),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFFF3CF5A), AppColors.orange, Color(0xFFF3CF5A)],
-              ),
-            ),
-            child: Container(
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.cardDeep,
-              ),
+    return Text(
+      text,
+      style: const TextStyle(
+        color: AppColors.textSoft,
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.5,
+      ),
+    );
+  }
+}
+
+class _PeriodCard extends StatelessWidget {
+  const _PeriodCard({
+    required this.category,
+    required this.icon,
+    required this.colors,
+    required this.onTap,
+  });
+
+  final AzkarCategory category;
+  final IconData icon;
+  final List<Color> colors;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        height: 190,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          ),
+          border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'ተስቢሕ',
-                    style: TextStyle(fontSize: 12, color: AppColors.muted),
-                  ),
+                  GoldBadge(icon: icon, size: 46),
+                  const Spacer(),
                   Text(
-                    '${state.tasbih}',
+                    category.title,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
                       color: AppColors.gold,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    category.subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: AppColors.textSoft, fontSize: 12),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${category.items.length} አዝካሮች ›',
+                    style: const TextStyle(color: AppColors.muted, fontSize: 12),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'የተስቢህ ቆጣሪ',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'ሱብሓነላህ • አልሐምዱሊላህ • አላሁ አክበር',
-                  style: TextStyle(fontSize: 12, color: AppColors.muted),
-                ),
-              ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Placeholder for a section that is not ready yet.
+class _SoonCard extends StatelessWidget {
+  const _SoonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 190,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardDeep.withAlpha(180),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.lock_clock_outlined, color: AppColors.muted, size: 34),
+          Spacer(),
+          Text(
+            'ቦታ ተይዟል',
+            style: TextStyle(
+              color: AppColors.textSoft,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          FilledButton(
-            onPressed: () => context.read<AppState>().tapTasbih(),
-            child: const Text('+1'),
-          ),
-          IconButton(
-            tooltip: 'ዳግም አስጀምር',
-            onPressed: () => context.read<AppState>().resetTasbih(),
-            icon: const Icon(Icons.refresh, color: AppColors.muted),
+          SizedBox(height: 4),
+          Text(
+            'Coming soon',
+            style: TextStyle(color: AppColors.muted, fontSize: 13),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The 99 names of Allah, shown in the first slot of the "በቅርብ" row.
+class _NamesCard extends StatelessWidget {
+  const _NamesCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        height: 190,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF137A63), Color(0xFF052A22)],
+          ),
+          border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
+                  Spacer(),
+                  Text(
+                    '99 የአላህ ስሞች',
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'አስማኡል ሁስና',
+                    style: TextStyle(color: AppColors.textSoft, fontSize: 12),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'ይክፈቱ ›',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
