@@ -164,6 +164,33 @@ def patch_release_shrinking(app_dir: pathlib.Path) -> None:
     print(f'patch_android: {path.name} release shrinking off')
 
 
+def patch_compile_sdk(app_dir: pathlib.Path) -> None:
+    """Sets compileSdk to 36.
+
+    share_plus (and other plugins) must be compiled against Android 34 or
+    later, so the project's compileSdk has to be at least that high.
+    """
+    kts = app_dir / 'build.gradle.kts'
+    groovy = app_dir / 'build.gradle'
+    path = kts if kts.exists() else groovy
+    is_kts = path == kts
+    text = path.read_text(encoding='utf-8')
+    line = 'compileSdk = 36' if is_kts else 'compileSdk 36'
+
+    pattern = r'(?m)^([ \t]*)compileSdk(?:Version)?(\s*=\s*|\s+)[^\n]*$'
+    if re.search(pattern, text):
+        text = re.sub(pattern, lambda m: m.group(1) + line, text, count=1)
+    else:
+        android = re.search(r'^android\s*\{[ \t]*\n', text, re.M)
+        if not android:
+            fail(f'no android {{ block in {path.name}')
+        text = text[: android.end()] + f'    {line}\n' + text[android.end():]
+    if line not in text:
+        fail(f'could not set compileSdk in {path.name}')
+    path.write_text(text, encoding='utf-8')
+    print(f'patch_android: {path.name} compileSdk 36')
+
+
 def main() -> None:
     root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '.')
     app_dir = root / 'android' / 'app'
@@ -172,6 +199,7 @@ def main() -> None:
     patch_manifest(app_dir)
     patch_gradle(app_dir)
     patch_release_shrinking(app_dir)
+    patch_compile_sdk(app_dir)
     print('patch_android: done')
 
 
