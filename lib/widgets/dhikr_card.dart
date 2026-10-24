@@ -76,7 +76,7 @@ class DhikrCard extends StatelessWidget {
                   backgroundColor: AppColors.goldDark,
                   child: Text(
                     '$index',
-                    style: TextStyle(fontSize: 12, color: AppColors.text),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -130,7 +130,7 @@ class DhikrCard extends StatelessWidget {
                 fontFamily: 'Quran',
                 fontSize: 24 * scale * state.arabicScale,
                 height: 2.0,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ),
           ),

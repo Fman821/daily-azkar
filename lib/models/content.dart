@@ -111,6 +111,30 @@ class Content {
   }
 }
 
+/// Makes Arabic easier to compare for search: removes vowel marks, tatweel and
+/// Quranic signs, and unifies the alef, ya and ta marbuta forms. This lets a
+/// search typed without vowel marks match the fully marked text.
+String normalizeArabic(String text) {
+  final out = StringBuffer();
+  for (final rune in text.runes) {
+    final isMark = (rune >= 0x064B && rune <= 0x065F) || // harakat, shadda, sukun
+        rune == 0x0670 || // dagger alef
+        (rune >= 0x06D6 && rune <= 0x06ED) || // Quranic marks
+        rune == 0x0640; // tatweel
+    if (isMark) continue;
+    if (rune == 0x0622 || rune == 0x0623 || rune == 0x0625 || rune == 0x0671) {
+      out.writeCharCode(0x0627); // all alef forms -> ا
+    } else if (rune == 0x0649) {
+      out.writeCharCode(0x064A); // ى -> ي
+    } else if (rune == 0x0629) {
+      out.writeCharCode(0x0647); // ة -> ه
+    } else {
+      out.writeCharCode(rune);
+    }
+  }
+  return out.toString();
+}
+
 class ContentRepository {
   ContentRepository._();
 

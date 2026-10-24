@@ -132,7 +132,7 @@ class TasbihScreen extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [Color(0xFF137A63), AppColors.cardDeep],
+                              colors: AppColors.tile([const Color(0xFF137A63), AppColors.cardDeep]),
                             ),
                             border: Border.all(color: AppColors.goldSoft.withAlpha(160), width: 1.5),
                             boxShadow: [
@@ -143,7 +143,7 @@ class TasbihScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'ተስቢሕ',
+                                'ተስቢህ',
                                 style: TextStyle(color: AppColors.muted, fontSize: 13, letterSpacing: 1),
                               ),
                               Text(
@@ -180,7 +180,7 @@ class TasbihScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.only(bottom: 14),
-              child: Text('ክብሩን ነክተው ይቁጠሩ', style: TextStyle(color: AppColors.muted)),
+              child: Text('ክቡን ነክተው ይቁጠሩ', style: TextStyle(color: AppColors.muted)),
             ),
           ],
         ),

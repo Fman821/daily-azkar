@@ -52,9 +52,16 @@ class RootShell extends StatefulWidget {
 }
 
 class _RootShellState extends State<RootShell> {
-  int _index = 0;
+  // Remembered outside the State: picking a colour theme rebuilds the whole
+  // app (see the key in AzkarApp), and Settings should stay open afterwards.
+  static int _lastIndex = 0;
 
-  void _selectTab(int index) => setState(() => _index = index);
+  int _index = _lastIndex;
+
+  void _selectTab(int index) {
+    _lastIndex = index;
+    setState(() => _index = index);
+  }
 
   @override
   Widget build(BuildContext context) {

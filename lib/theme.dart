@@ -168,6 +168,12 @@ class AppColors {
   static Color get muted => _p.muted;
   static Color get border => _p.border;
   static Color get onGold => _p.onGold;
+
+  /// Gradient colours for a tile or card. Dark themes keep the [tinted]
+  /// colours; light themes use the card colours, so the text on top stays
+  /// readable.
+  static List<Color> tile(List<Color> tinted) =>
+      _p.isDark ? tinted : [_p.card, _p.cardDeep];
 }
 
 ThemeData buildTheme() {

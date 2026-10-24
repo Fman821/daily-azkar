@@ -46,7 +46,7 @@ class GoldCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF0F3B29), AppColors.cardDeep],
+          colors: AppColors.tile([const Color(0xFF0F3B29), AppColors.cardDeep]),
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
@@ -89,7 +89,7 @@ class GoldBadge extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF0F3B29), AppColors.cardDeep],
+                  colors: AppColors.tile([const Color(0xFF0F3B29), AppColors.cardDeep]),
                 ),
                 borderRadius: BorderRadius.circular(size * 0.1),
                 border: Border.all(color: AppColors.gold, width: 1.5),

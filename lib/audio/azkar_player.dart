@@ -15,7 +15,12 @@ class AzkarPlayer extends ChangeNotifier {
   late final StreamSubscription<PlayerState> _subscription;
   String? _currentKey;
 
-  bool isPlaying(String key) => _currentKey == key && _player.playing;
+  // just_audio keeps `playing` true after a recording ends, so the finished
+  // state is checked as well.
+  bool get _finished => _player.processingState == ProcessingState.completed;
+
+  bool isPlaying(String key) =>
+      _currentKey == key && _player.playing && !_finished;
 
   /// Plays, pauses or resumes the recording for [key].
   /// [source] is an https link or an asset path. Returns an error message to
@@ -23,10 +28,10 @@ class AzkarPlayer extends ChangeNotifier {
   Future<String?> toggle(String key, String source) async {
     try {
       if (_currentKey == key) {
-        if (_player.playing) {
+        if (_player.playing && !_finished) {
           await _player.pause();
         } else {
-          if (_player.processingState == ProcessingState.completed) {
+          if (_finished) {
             await _player.seek(Duration.zero);
           }
           unawaited(_player.play());

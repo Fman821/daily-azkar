@@ -71,10 +71,10 @@ class _NamesHero extends StatelessWidget {
       child: Container(
         height: 160,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF137A63), Color(0xFF052A22)],
+            colors: AppColors.tile(const [Color(0xFF137A63), Color(0xFF052A22)]),
           ),
           border: Border.all(color: AppColors.gold.withAlpha(150)),
           borderRadius: BorderRadius.circular(24),
@@ -147,10 +147,10 @@ class _ListCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(22),
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF0E5C4B), Color(0xFF062A21)],
+              colors: AppColors.tile(const [Color(0xFF0E5C4B), Color(0xFF062A21)]),
             ),
             border: Border.all(color: AppColors.goldSoft.withAlpha(120)),
           ),

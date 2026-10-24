@@ -180,10 +180,10 @@ class _VerseCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0E7A62), Color(0xFF063B31)],
+          colors: AppColors.tile(const [Color(0xFF0E7A62), Color(0xFF063B31)]),
         ),
         border: Border.all(color: AppColors.gold.withAlpha(140)),
         boxShadow: const [
@@ -200,7 +200,7 @@ class _VerseCard extends StatelessWidget {
               fontFamily: 'Quran',
               fontSize: 22 * fontScale * arabicScale,
               height: 1.9,
-              color: Colors.white,
+              color: AppColors.text,
             ),
           ),
           const SizedBox(height: 10),
@@ -273,7 +273,7 @@ class _PeriodCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: colors,
+            colors: AppColors.tile(colors),
           ),
           border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
           borderRadius: BorderRadius.circular(24),
@@ -370,10 +370,10 @@ class _NamesCard extends StatelessWidget {
       child: Container(
         height: 190,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF137A63), Color(0xFF052A22)],
+            colors: AppColors.tile(const [Color(0xFF137A63), Color(0xFF052A22)]),
           ),
           border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
           borderRadius: BorderRadius.circular(24),

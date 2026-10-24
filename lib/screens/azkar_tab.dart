@@ -195,7 +195,7 @@ class _CategoryTile extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: colors,
+            colors: AppColors.tile(colors),
           ),
           border: Border.all(color: AppColors.goldSoft.withAlpha(130)),
           borderRadius: BorderRadius.circular(22),

@@ -41,6 +41,7 @@ class _NamesScreenState extends State<NamesScreen> {
 
     final q = _query.trim();
     final lower = q.toLowerCase();
+    final arabicQuery = normalizeArabic(q);
     final visible = q.isEmpty
         ? names
         : names
@@ -48,7 +49,8 @@ class _NamesScreenState extends State<NamesScreen> {
               (n) =>
                   n.transliteration.toLowerCase().contains(lower) ||
                   n.meaning.contains(q) ||
-                  n.arabic.contains(q) ||
+                  (arabicQuery.isNotEmpty &&
+                      normalizeArabic(n.arabic).contains(arabicQuery)) ||
                   n.number.toString() == q,
             )
             .toList();
@@ -141,7 +143,7 @@ class _NamesScreenState extends State<NamesScreen> {
                                     style: TextStyle(
                                       fontFamily: 'Quran',
                                       fontSize: 22 * scale,
-                                      color: Colors.white,
+                                      color: AppColors.text,
                                     ),
                                   ),
                                 ),

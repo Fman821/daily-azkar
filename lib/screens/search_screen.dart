@@ -39,6 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final everything = [...content.allAzkar, ...content.duas];
 
     final q = _query.trim();
+    final arabicQuery = normalizeArabic(q);
     final results = q.isEmpty
         ? const <Dhikr>[]
         : everything
@@ -46,7 +47,8 @@ class _SearchScreenState extends State<SearchScreen> {
               (d) =>
                   d.title.contains(q) ||
                   d.amharic.contains(q) ||
-                  d.arabic.contains(q),
+                  (arabicQuery.isNotEmpty &&
+                      normalizeArabic(d.arabic).contains(arabicQuery)),
             )
             .toList();
 

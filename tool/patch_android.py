@@ -6,7 +6,8 @@ Run from the project root after `flutter create --platforms=android .`:
     python3 tool/patch_android.py .
 
 Changes:
-  - permissions: INTERNET, POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED
+  - permissions: INTERNET, POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED,
+    SCHEDULE_EXACT_ALARM, USE_EXACT_ALARM, USE_FULL_SCREEN_INTENT
   - app label: እስላማዊ አዝካር
   - boot/alarm receivers used by flutter_local_notifications
   - core library desugaring (needed by flutter_local_notifications on Android)
@@ -26,6 +27,9 @@ PERMISSIONS = [
     'android.permission.POST_NOTIFICATIONS',
     'android.permission.RECEIVE_BOOT_COMPLETED',
     'android.permission.SCHEDULE_EXACT_ALARM',
+    # Alarm mode asks for exact times and a full-screen alert on the lock screen.
+    'android.permission.USE_EXACT_ALARM',
+    'android.permission.USE_FULL_SCREEN_INTENT',
 ]
 RECEIVERS = """
         <receiver
