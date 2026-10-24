@@ -31,6 +31,9 @@ jobs:
       - name: Patch Android project (permissions, reminders, app name)
         run: python3 tool/patch_android.py .
 
+      - name: Show compileSdk (debug)
+        run: grep -n "compileSdk" android/app/build.gradle* || true
+
       - name: Install packages
         run: flutter pub get
 
