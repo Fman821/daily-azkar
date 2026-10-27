@@ -5,12 +5,20 @@ import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/dhikr_card.dart';
+import '../widgets/photo.dart';
 
 class FavoritesTab extends StatelessWidget {
   const FavoritesTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_favorites.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final state = context.watch<AppState>();
     final content = context.read<Content>();
     final items = [...content.allAzkar, ...content.duas]
@@ -18,6 +26,7 @@ class FavoritesTab extends StatelessWidget {
         .toList();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('ተወዳጆች')),
       body: items.isEmpty
           ? Center(

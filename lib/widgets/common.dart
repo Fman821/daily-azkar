@@ -34,10 +34,14 @@ class GoldCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
+    this.image,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
+
+  /// Optional photo (a file name in assets/images) shown faintly behind the card.
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,13 @@ class GoldCard extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: AppColors.tile([const Color(0xFF0F3B29), AppColors.cardDeep]),
         ),
+        image: image == null
+            ? null
+            : DecorationImage(
+                image: AssetImage('assets/images/$image'),
+                fit: BoxFit.cover,
+                opacity: 0.22,
+              ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
         boxShadow: const [

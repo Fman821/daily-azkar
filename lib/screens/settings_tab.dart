@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../notifications/azkar_reminders.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/photo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsTab extends StatelessWidget {
@@ -36,9 +37,17 @@ class SettingsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_settings.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final state = context.watch<AppState>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('ቅንብር')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),

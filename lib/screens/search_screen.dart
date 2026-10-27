@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/content.dart';
 import '../theme.dart';
 import '../widgets/dhikr_card.dart';
+import '../widgets/photo.dart';
 
 /// Searches every azkar item and dua by title, Arabic text or Amharic meaning.
 class SearchScreen extends StatefulWidget {
@@ -35,6 +36,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_azkar.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final content = context.read<Content>();
     final everything = [...content.allAzkar, ...content.duas];
 
@@ -53,6 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
             .toList();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('ፈልግ')),
       body: Column(
         children: [

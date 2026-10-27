@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/photo.dart';
 
 /// Tasbih counter on its own page: a glowing ring fills up to the chosen goal,
 /// with a light vibration on every count.
@@ -51,6 +52,13 @@ class TasbihScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_tasbih.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final state = context.watch<AppState>();
     final target = state.tasbihTarget;
     final count = state.tasbih;
@@ -59,6 +67,7 @@ class TasbihScreen extends StatelessWidget {
     final progress = target > 0 ? inRound / target : 0.0;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('ተስቢህ መቁጠሪያ'),
         actions: [

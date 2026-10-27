@@ -5,6 +5,7 @@ import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/photo.dart';
 import 'azkar_list_screen.dart';
 import 'names_screen.dart';
 
@@ -52,6 +53,13 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_home.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final state = context.watch<AppState>();
     final content = context.read<Content>();
     final morning = content.categoryById('morning')!;
@@ -81,7 +89,6 @@ class HomeTab extends StatelessWidget {
                 child: _PeriodCard(
                   category: morning,
                   icon: Icons.wb_twilight,
-                  colors: const [Color(0xFF137A63), Color(0xFF063A2F)],
                   onTap: () => openCategory(context, morning),
                 ),
               ),
@@ -90,7 +97,6 @@ class HomeTab extends StatelessWidget {
                 child: _PeriodCard(
                   category: evening,
                   icon: Icons.nights_stay_outlined,
-                  colors: const [Color(0xFF0D5A6E), Color(0xFF062A36)],
                   onTap: () => openCategory(context, evening),
                 ),
               ),
@@ -176,20 +182,9 @@ class _VerseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return PhotoPanel(
+      image: 'bg_verse.jpg',
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: AppColors.tile(const [Color(0xFF0E7A62), Color(0xFF063B31)]),
-        ),
-        border: Border.all(color: AppColors.gold.withAlpha(140)),
-        boxShadow: const [
-          BoxShadow(color: Color(0x80000000), blurRadius: 18, offset: Offset(0, 8)),
-        ],
-      ),
       child: Column(
         children: [
           Text(
@@ -254,66 +249,45 @@ class _PeriodCard extends StatelessWidget {
   const _PeriodCard({
     required this.category,
     required this.icon,
-    required this.colors,
     required this.onTap,
   });
 
   final AzkarCategory category;
   final IconData icon;
-  final List<Color> colors;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        height: 190,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.tile(colors),
-          ),
-          border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GoldBadge(icon: icon, size: 46),
-                  const Spacer(),
-                  Text(
-                    category.title,
-                    style: TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    category.subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColors.textSoft, fontSize: 12),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${category.items.length} አዝካሮች ›',
-                    style: TextStyle(color: AppColors.muted, fontSize: 12),
-                  ),
-                ],
-              ),
+    return PhotoPanel(
+      image: 'bg_${category.id}.jpg',
+      height: 190,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GoldBadge(icon: icon, size: 46),
+          const Spacer(),
+          Text(
+            category.title,
+            style: TextStyle(
+              color: AppColors.gold,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
             ),
           ),
-        ),
+          const SizedBox(height: 2),
+          Text(
+            category.subtitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppColors.textSoft, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${category.items.length} አዝካሮች ›',
+            style: TextStyle(color: AppColors.muted, fontSize: 12),
+          ),
+        ],
       ),
     );
   }
@@ -365,53 +339,34 @@ class _NamesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        height: 190,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.tile(const [Color(0xFF137A63), Color(0xFF052A22)]),
-          ),
-          border: Border.all(color: AppColors.goldSoft.withAlpha(150)),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
-                  const Spacer(),
-                  Text(
-                    '99 የአላህ ስሞች',
-                    style: TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'አስማኡል ሁስና',
-                    style: TextStyle(color: AppColors.textSoft, fontSize: 12),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'ይክፈቱ ›',
-                    style: TextStyle(color: AppColors.muted, fontSize: 12),
-                  ),
-                ],
-              ),
+    return PhotoPanel(
+      image: 'bg_names.jpg',
+      height: 190,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const GoldBadge(icon: Icons.auto_awesome_outlined, size: 46),
+          const Spacer(),
+          Text(
+            '99 የአላህ ስሞች',
+            style: TextStyle(
+              color: AppColors.gold,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
             ),
           ),
-        ),
+          const SizedBox(height: 2),
+          Text(
+            'አስማኡል ሁስና',
+            style: TextStyle(color: AppColors.textSoft, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'ይክፈቱ ›',
+            style: TextStyle(color: AppColors.muted, fontSize: 12),
+          ),
+        ],
       ),
     );
   }

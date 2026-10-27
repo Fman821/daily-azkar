@@ -64,7 +64,11 @@ class DhikrCard extends StatelessWidget {
     final double progress = done ? 1.0 : count / dhikr.repeat;
     final isPlaying = player.isPlaying(dhikr.key);
 
+    final photo =
+        dhikr.category == 'duas' ? 'bg_duas.jpg' : 'row_${dhikr.category}.jpg';
+
     return GoldCard(
+      image: photo,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -196,9 +196,10 @@ ThemeData buildTheme() {
     colorScheme: scheme,
     scaffoldBackgroundColor: AppColors.bg,
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.bg,
+      backgroundColor: Colors.transparent,
       foregroundColor: AppColors.gold,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
         color: AppColors.gold,

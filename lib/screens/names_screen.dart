@@ -7,6 +7,7 @@ import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/photo.dart';
 
 /// The 99 names of Allah, with search by name, meaning or number.
 class NamesScreen extends StatefulWidget {
@@ -36,6 +37,13 @@ class _NamesScreenState extends State<NamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_names.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final scale = context.watch<AppState>().fontScale;
     final names = context.read<Content>().names;
 
@@ -56,6 +64,7 @@ class _NamesScreenState extends State<NamesScreen> {
             .toList();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('99 የአላህ ስሞች')),
       body: Column(
         children: [

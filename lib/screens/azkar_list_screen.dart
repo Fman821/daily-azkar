@@ -6,6 +6,7 @@ import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/dhikr_card.dart';
+import '../widgets/photo.dart';
 
 /// All items in one azkar category (morning, evening, house, ...).
 class AzkarListScreen extends StatelessWidget {
@@ -15,7 +16,15 @@ class AzkarListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_${category.id}.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(category.title),
         actions: [

@@ -5,6 +5,7 @@ import '../models/content.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/photo.dart';
 import 'home_tab.dart';
 import 'search_screen.dart';
 import 'tasbih_screen.dart';
@@ -20,17 +21,15 @@ class AzkarTab extends StatelessWidget {
     'ሌሎች': ['other'],
   };
 
-  static const _palette = <String, List<Color>>{
-    'morning': [Color(0xFF137A63), Color(0xFF063B31)],
-    'noon': [Color(0xFF8A6A1E), Color(0xFF3A2A08)],
-    'evening': [Color(0xFF0D5A6E), Color(0xFF062A36)],
-    'house': [Color(0xFF1D6B45), Color(0xFF0A2E1D)],
-    'travel': [Color(0xFF0F6470), Color(0xFF07303A)],
-    'other': [Color(0xFF6B4E12), Color(0xFF2A1E07)],
-  };
-
   @override
   Widget build(BuildContext context) {
+    return PhotoBackdrop(
+      image: 'bg_azkar.jpg',
+      child: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final state = context.watch<AppState>();
     final byId = {for (final c in context.read<Content>().categories) c.id: c};
 
@@ -38,6 +37,7 @@ class AzkarTab extends StatelessWidget {
         c.items.where((d) => state.progressOf(d.key) >= d.repeat).length;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('አዝካሮች'),
         actions: [
@@ -76,7 +76,6 @@ class AzkarTab extends StatelessWidget {
                   if (byId[id] != null)
                     _CategoryTile(
                       category: byId[id]!,
-                      colors: _palette[id]!,
                       done: doneOf(byId[id]!),
                       onTap: () => openCategory(context, byId[id]!),
                     ),
@@ -173,13 +172,11 @@ class _GroupTitle extends StatelessWidget {
 class _CategoryTile extends StatelessWidget {
   const _CategoryTile({
     required this.category,
-    required this.colors,
     required this.done,
     required this.onTap,
   });
 
   final AzkarCategory category;
-  final List<Color> colors;
   final int done;
   final VoidCallback onTap;
 
@@ -188,60 +185,43 @@ class _CategoryTile extends StatelessWidget {
     final total = category.items.length;
     final progress = total == 0 ? 0.0 : done / total;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.tile(colors),
-          ),
-          border: Border.all(color: AppColors.goldSoft.withAlpha(130)),
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GoldBadge(icon: iconFor(category.icon), size: 46),
-                  const Spacer(),
-                  Text(
-                    category.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w800,
-                      height: 1.25,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 5,
-                      backgroundColor: Colors.black.withAlpha(90),
-                      color: AppColors.gold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '$done / $total',
-                    style: TextStyle(color: AppColors.textSoft, fontSize: 11.5),
-                  ),
-                ],
-              ),
+    return PhotoPanel(
+      image: category.image,
+      radius: 22,
+      padding: const EdgeInsets.all(14),
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GoldBadge(icon: iconFor(category.icon), size: 46),
+          const Spacer(),
+          Text(
+            category.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: AppColors.gold,
+              fontSize: 15.5,
+              fontWeight: FontWeight.w800,
+              height: 1.25,
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 5,
+              backgroundColor: Colors.black.withAlpha(90),
+              color: AppColors.gold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            '$done / $total',
+            style: TextStyle(color: AppColors.textSoft, fontSize: 11.5),
+          ),
+        ],
       ),
     );
   }
